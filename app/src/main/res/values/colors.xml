@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="light_black">#5F3F6A</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="light_cold_gray">#e3e2ea</color>
+    <color name="high_rating">#3bb33b</color>
+    <color name="medium_rating">#777</color>
+    <color name="low_rating">#FF0000</color>
+    <color name="positive_review">#abebb7</color>
+    <color name="negative_review">#eda2a9</color>
+    <color name="neutral_review">@color/light_cold_gray</color>
+
+
+    <color name="md_theme_light_primary">#FF0000</color>
+    <color name="md_theme_light_onPrimary">#0048FF</color>
+    <color name="md_theme_light_primaryContainer">#6400FF</color>
+    <color name="md_theme_light_onPrimaryContainer">#21005D</color>
+    <color name="md_theme_light_error">#B3261E</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+    <color name="md_theme_light_errorContainer">#F9DEDC</color>
+    <color name="md_theme_light_onErrorContainer">#410E0B</color>
+    <color name="md_theme_light_surface">#FF00C0</color>
+    <color name="md_theme_light_onSurface">#1C1B1F</color>
+    <color name="md_theme_light_surfaceVariant">#8B00F4</color>
+    <color name="md_theme_light_onBackground">#8B00F4</color>
+
+
+</resources>
