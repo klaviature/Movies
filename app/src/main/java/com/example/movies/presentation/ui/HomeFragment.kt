@@ -1,4 +1,4 @@
-package com.example.movies.ui
+package com.example.movies.presentation.ui
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -8,9 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import com.example.movies.ui.viewmodel.HomeViewModel
+import com.example.movies.presentation.ui.viewmodel.HomeViewModel
 import com.example.movies.databinding.FragmentHomeBinding
-import com.example.movies.ui.adapters.MoviesRecyclerViewAdapter
+import com.example.movies.presentation.ui.adapters.MoviesRecyclerViewAdapter
 
 class HomeFragment : Fragment() {
 

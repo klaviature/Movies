@@ -1,4 +1,4 @@
-package com.example.movies.ui.adapters
+package com.example.movies.presentation.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movies.R
-import com.example.movies.data.model.Movie
+import com.example.movies.domain.model.Movie
 import com.example.movies.databinding.MovieItemBinding
 
 class MoviesRecyclerViewAdapter() :

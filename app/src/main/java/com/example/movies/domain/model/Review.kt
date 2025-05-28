@@ -1,6 +1,5 @@
-package com.example.movies.data.model
+package com.example.movies.domain.model
 
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 

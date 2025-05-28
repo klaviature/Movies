@@ -1,15 +1,9 @@
-package com.example.movies.data.database
+package com.example.movies.domain.model
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.example.movies.domain.model.Poster
-import com.example.movies.domain.model.Rating
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-@Entity(tableName = "favourite_movies")
-data class FavouriteMovieEntity(
-    @PrimaryKey
+data class Movie(
     @SerializedName("id") var id: Int,
     @SerializedName("name") var name: String? = null,
     @SerializedName("alternativeName") var alternativeName: String? = null,
@@ -18,8 +12,9 @@ data class FavouriteMovieEntity(
     @SerializedName("description") var description: String? = null,
     @SerializedName("movieLength") var movieLength: Int? = null,
     @SerializedName("ageRating") var ageRating: Int? = null,
-    @Embedded
     @SerializedName("poster") var poster: Poster? = null,
-    @Embedded
-    @SerializedName("rating") var rating: Rating? = null
-)
+    @SerializedName("rating") var rating: Rating? = null,
+    @SerializedName("videos") var videos: Videos? = null,
+    @SerializedName("genres") var genres: List<Genre>? = null,
+    @SerializedName("countries") var countries: List<Country>? = null
+) : Serializable

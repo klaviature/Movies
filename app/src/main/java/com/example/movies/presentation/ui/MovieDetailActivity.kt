@@ -1,10 +1,9 @@
-package com.example.movies.ui
+package com.example.movies.presentation.ui
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -15,11 +14,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movies.R
-import com.example.movies.data.model.Movie
+import com.example.movies.domain.model.Movie
 import com.example.movies.databinding.ActivityMovieDetailBinding
-import com.example.movies.ui.adapters.ReviewsRecyclerViewAdapter
-import com.example.movies.ui.adapters.TrailersRecyclerViewAdapter
-import com.example.movies.ui.viewmodel.MovieDetailViewModel
+import com.example.movies.presentation.ui.adapters.ReviewsRecyclerViewAdapter
+import com.example.movies.presentation.ui.adapters.TrailersRecyclerViewAdapter
+import com.example.movies.presentation.ui.viewmodel.MovieDetailViewModel
 import androidx.core.view.WindowCompat
 import androidx.core.view.updatePadding
 

@@ -1,4 +1,4 @@
-package com.example.movies.ui
+package com.example.movies.presentation.ui
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -7,23 +7,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.movies.ui.viewmodel.WatchedViewModel
-import com.example.movies.databinding.FragmentWatchedBinding
-import com.example.movies.ui.adapters.MoviesRecyclerViewAdapter
+import com.example.movies.presentation.ui.viewmodel.FavouritesViewModel
+import com.example.movies.databinding.FragmentFavouritesBinding
+import com.example.movies.presentation.ui.adapters.MoviesRecyclerViewAdapter
 
-class WatchedFragment : Fragment() {
+class FavouritesFragment : Fragment() {
 
-    private val LOG_TAG = "WatchedFragment"
+    private val LOG_TAG = "FavouritesFragment"
 
-    private lateinit var binding: FragmentWatchedBinding
-
-    private val viewModel: WatchedViewModel by viewModels()
+    private lateinit var binding: FragmentFavouritesBinding
 
     private val adapter = MoviesRecyclerViewAdapter()
 
     companion object {
-        fun newInstance() = WatchedFragment()
+        fun newInstance() = FavouritesFragment()
     }
+
+    private val viewModel: FavouritesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +33,7 @@ class WatchedFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentWatchedBinding.inflate(inflater)
+        binding = FragmentFavouritesBinding.inflate(inflater)
         return binding.root
     }
 

@@ -1,11 +1,11 @@
-package com.example.movies.ui.viewmodel
+package com.example.movies.presentation.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.example.movies.data.database.MovieDatabase
-import com.example.movies.data.model.Movie
+import com.example.movies.domain.model.Movie
 import com.example.movies.toMovie
 
 class FavouritesViewModel(application: Application) : AndroidViewModel(application) {

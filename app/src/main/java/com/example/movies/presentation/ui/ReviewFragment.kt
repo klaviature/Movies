@@ -1,11 +1,11 @@
-package com.example.movies.ui
+package com.example.movies.presentation.ui
 
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.movies.data.model.Review
+import com.example.movies.domain.model.Review
 import com.example.movies.databinding.FragmentReviewBinding
 import com.example.movies.formatDate
 import com.google.android.material.bottomsheet.BottomSheetDialog

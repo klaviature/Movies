@@ -1,4 +1,4 @@
-package com.example.movies.ui.adapters
+package com.example.movies.presentation.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,10 +8,10 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movies.R
-import com.example.movies.data.model.Review
+import com.example.movies.domain.model.Review
 import com.example.movies.databinding.ReviewItemBinding
 import com.example.movies.formatDate
-import com.example.movies.ui.adapters.MoviesRecyclerViewAdapter.OnEndReachListener
+import com.example.movies.presentation.ui.adapters.MoviesRecyclerViewAdapter.OnEndReachListener
 
 class ReviewsRecyclerViewAdapter() : RecyclerView.Adapter<ReviewsRecyclerViewAdapter.ViewHolder>() {
 

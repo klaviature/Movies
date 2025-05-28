@@ -1,4 +1,4 @@
-package com.example.movies.ui.viewmodel
+package com.example.movies.presentation.ui.viewmodel
 
 import android.app.Application
 import android.util.Log
@@ -7,8 +7,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.movies.data.api.kinopoisk.ApiFactory
 import com.example.movies.data.database.MovieDatabase
-import com.example.movies.data.model.Movie
-import com.example.movies.data.model.Review
+import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.Review
 import com.example.movies.data.model.ReviewResponse
 import com.example.movies.toFavouriteMovie
 import com.example.movies.toMovie

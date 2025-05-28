@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_white_rounded_corners"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    tools:context=".ui.ReviewFragment">
+    tools:context=".presentation.ui.ReviewFragment">
 
     <LinearLayout
         android:id="@+id/standard_bottom_sheet"

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.HomeFragment">
+    tools:context=".presentation.ui.HomeFragment">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/searchCardView"

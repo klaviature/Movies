@@ -1,4 +1,4 @@
-package com.example.movies.ui
+package com.example.movies.presentation.ui
 
 import android.os.Bundle
 import android.view.Menu
