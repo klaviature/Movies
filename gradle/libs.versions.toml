@@ -4,7 +4,7 @@ agp = "8.5.2"
 converterGson = "2.9.0"
 glide = "4.16.0"
 gson = "2.11.0"
-kotlin = "1.9.10"
+kotlin = "2.1.21"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -27,7 +27,10 @@ fragmentKtx = "1.5.6"
 [libraries]
 adapterRxjava3 = {group = "com.squareup.retrofit2", name = "adapter-rxjava3", version.ref ="adapterRxjava3_version"}
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
+androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 room-rxjava3 = { module = "androidx.room:room-rxjava3", version.ref = "roomRxjava3" }
@@ -52,4 +55,5 @@ androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", ve
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

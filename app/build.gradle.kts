@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
     id("com.google.devtools.ksp")
 }
 
@@ -38,11 +39,33 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 }
 
 dependencies {
+    // =================================== Compose ================================================
+    val composeBom = platform("androidx.compose:compose-bom:2025.05.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
+
+    // Optional - Add full set of material icons
+    // implementation("androidx.compose.material:material-icons-extended")
+
+    // Optional - Integration with activities
+    // implementation("androidx.activity:activity-compose:1.10.1")
+    // Optional - Integration with ViewModels
+    // implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+    // Optional - Integration with LiveData
+    // implementation("androidx.compose.runtime:runtime-livedata")
+    // Optional - Integration with RxJava
+    // implementation("androidx.compose.runtime:runtime-rxjava2")
+
+    // ===================================== Other ================================================
     implementation(libs.retrofit)
     implementation(libs.gson)
     implementation(libs.converter.gson)
