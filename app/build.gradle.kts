@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.movies"
-        minSdk = 24
+        minSdk = 31
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -70,7 +70,14 @@ dependencies {
     // Optional - Integration with RxJava
     // implementation("androidx.compose.runtime:runtime-rxjava2")
 
+    // ====================================== Coil ================================================
+    implementation(libs.coil.compose)
+
     // ===================================== Other ================================================
+
+    implementation(libs.haze)
+    implementation(libs.haze.materials)
+
     implementation(libs.retrofit)
     implementation(libs.gson)
     implementation(libs.converter.gson)

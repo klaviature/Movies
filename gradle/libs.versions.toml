@@ -1,9 +1,12 @@
 [versions]
 adapterRxjava3_version = "2.11.0"
 agp = "8.8.0"
+coilCompose = "3.2.0"
 converterGson = "2.9.0"
 glide = "4.16.0"
 gson = "2.11.0"
+haze = "1.6.2"
+hazeMaterials = "1.6.2"
 kotlin = "2.1.21"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -34,6 +37,9 @@ androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "hazeMaterials" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 room-rxjava3 = { module = "androidx.room:room-rxjava3", version.ref = "roomRxjava3" }
