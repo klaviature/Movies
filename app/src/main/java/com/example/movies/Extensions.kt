@@ -2,7 +2,7 @@ package com.example.movies
 
 import com.example.movies.data.database.FavouriteMovieEntity
 import com.example.movies.data.database.WatchedMovieEntity
-import com.example.movies.data.model.Movie
+import com.example.movies.domain.model.Movie
 
 fun FavouriteMovieEntity.toMovie(): Movie {
     return Movie(

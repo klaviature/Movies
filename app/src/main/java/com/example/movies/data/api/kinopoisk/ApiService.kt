@@ -1,6 +1,6 @@
 package com.example.movies.data.api.kinopoisk
 
-import com.example.movies.data.model.Movie
+import com.example.movies.domain.model.Movie
 import com.example.movies.data.model.MovieResponse
 import com.example.movies.data.model.ReviewResponse
 import io.reactivex.rxjava3.core.Single
