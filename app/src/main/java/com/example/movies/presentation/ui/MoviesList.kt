@@ -30,7 +30,7 @@ fun MoviesList(
             item {
                 MovieCard(
                     modifier = Modifier.padding(8.dp),
-                    rating = Rating(1.0, 1.0)
+                    rating = Rating(10.0, 10.0)
                 )
             }
         }
