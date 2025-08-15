@@ -4,4 +4,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     id("com.google.devtools.ksp") version "2.1.21-2.0.1" apply false
     alias(libs.plugins.compose.compiler) apply false
+
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.serialization") version "2.2.0"
 }

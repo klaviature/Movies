@@ -75,6 +75,9 @@ dependencies {
 
     // ===================================== Other ================================================
 
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.converter.kotlinx.serialization)
+
     implementation(libs.haze)
     implementation(libs.haze.materials)
 
