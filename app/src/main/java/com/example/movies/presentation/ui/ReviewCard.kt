@@ -1,5 +1,6 @@
 package com.example.movies.presentation.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -63,8 +64,8 @@ fun ReviewCard(
                         listOf(
                             MaterialTheme.colorScheme.surfaceContainerLow,
                             when (type) {
-                                "Негативный" -> Color(0xFFFCDEDE)
-                                "Позитивный" -> Color(0xFFDEFCE0)
+                                "Негативный" -> Color(0x41FF3030)
+                                "Позитивный" -> Color(0x404EFF59)
                                 else -> MaterialTheme.colorScheme.surfaceContainerLow
                             }
                         ),
@@ -78,7 +79,7 @@ fun ReviewCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = title,
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -189,7 +190,7 @@ private fun ReviewCardNegativePreview() {
     }
 }
 
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_UNDEFINED)
 @Composable
 private fun ListOfReviewCard() {
     val fakeReviews = listOf(
