@@ -3,14 +3,13 @@ package com.example.movies.presentation.ui.moviedetailscreen
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +30,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -36,20 +39,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.example.movies.R
-import com.example.movies.domain.model.Country
-import com.example.movies.domain.model.Genre
-import com.example.movies.domain.model.Rating
 import com.example.movies.domain.model.Review
-import com.example.movies.domain.model.Trailer
+import com.example.movies.domain.model.Video
 import com.example.movies.presentation.ui.ImdbRatingCard
 import com.example.movies.presentation.ui.KpRatingCard
 import com.example.movies.presentation.ui.ReviewCard
@@ -64,40 +68,65 @@ import dev.chrisbanes.haze.rememberHazeState
 
 @Composable
 fun MovieDetailScreen(
-    viewModel: ViewModel
+    movieId: Int = 535341, // TODO Implement an Navigation with args
+    viewModel: MovieDetailViewModel = viewModel()
 ) {
+    val state = viewModel.state.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.loadMovieInfo(movieId)
+    }
 
+    MovieDetailScreenContent(
+        name = state.value.name,
+        type = state.value.type,
+        year = state.value.year,
+        description = state.value.description,
+        length = state.value.length,
+        ageRating = state.value.ageRating,
+        posterUrl = state.value.posterUrl,
+        ratingKp = state.value.ratingKp,
+        ratingImdb = state.value.ratingImdb,
+        trailers = state.value.trailers,
+        genres = state.value.genres,
+        countries = state.value.countries,
+        reviews = state.value.reviews,
+        backdropUrl = state.value.backdropUrl,
+        logoUrl = state.value.logoUrl,
+        isFavourite = state.value.isFavourite,
+        isWatched = state.value.isWatched,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
 fun MovieDetailScreenContent(
-    name: String = "",
-    type: String = "",
-    year: String = "",
-    description: String = "",
-    length: String = "",
-    ageRating: String = "",
-    posterUrl: String = "",
-    rating: Rating? = null,
-    trailers: List<Trailer>? = null,
-    genres: List<Genre>? = null,
-    countries: List<Country>? = null,
-    reviews: List<Review>? = null
+    name: String,
+    type: String,
+    year: String,
+    description: String,
+    length: String?,
+    ageRating: String,
+    posterUrl: String?,
+    backdropUrl: String?,
+    logoUrl: String?,
+    ratingKp: String?,
+    ratingImdb: String?,
+    trailers: List<Video>?,
+    genres: List<String>?,
+    countries: List<String>?,
+    reviews: List<Review>?,
+    isFavourite: Boolean = false,
+    isWatched: Boolean = false
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val showAppBarContent by remember {
-        derivedStateOf { scrollBehavior.state.contentOffset < -150 }
+        derivedStateOf { scrollBehavior.state.contentOffset < -500 }
     }
     val backgroundColor by animateColorAsState(
         targetValue = if (showAppBarContent)
-            MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.5f)
+            MaterialTheme.colorScheme.surfaceContainer
         else
             Color.Transparent,
-        animationSpec = tween(durationMillis = 300)
-    )
-    val blurIntensity by animateFloatAsState(
-        targetValue = if (showAppBarContent) 1f else 0f,
         animationSpec = tween(durationMillis = 300)
     )
 
@@ -111,7 +140,7 @@ fun MovieDetailScreenContent(
                 modifier = Modifier
                     .hazeEffect(state = hazeState, style = HazeMaterials.ultraThin()) {
                         progressive = HazeProgressive.verticalGradient(
-                            startIntensity = 1f, endIntensity = 0f
+                            startIntensity = 0.3f, endIntensity = 0f
                         )
                     },
                 title = {
@@ -132,17 +161,40 @@ fun MovieDetailScreenContent(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            imageVector = if (isFavourite) {
+                                Icons.Filled.Favorite
+                            } else {
+                                Icons.Outlined.Favorite
+                            },
+                            contentDescription = null
+                        )
+                    }
+                    IconButton(onClick = {}) {
+                        Icon(
+                            imageVector = if (isWatched) {
+                                ImageVector.vectorResource(R.drawable.eye_filled)
+                            } else {
+                                ImageVector.vectorResource(R.drawable.eye_outlined)
+                            },
+                            contentDescription = null
+                        )
+                    }
                 }
             )
         }
     ) { innerPadding ->
         val scrollState = rememberScrollState()
-        Image(
+
+        AsyncImage(
             modifier = Modifier
-                .hazeSource(state = hazeState)
+                .hazeSource(hazeState)
                 .fillMaxWidth()
-                .height(300.dp),
-            painter = painterResource(R.drawable.movie_backdrop),
+                .height(450.dp),
+            model = backdropUrl ?: posterUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
@@ -152,15 +204,15 @@ fun MovieDetailScreenContent(
                 .fillMaxWidth()
                 .verticalScroll(state = scrollState)
                 .padding(innerPadding)
-                .padding(top = 100.dp)
+                .padding(top = 140.dp)
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
                             MaterialTheme.colorScheme.background
                         ),
-                        startY = 70f,
-                        endY = 180f
+                        startY = 200f,
+                        endY = 450f
                     )
                 )
         ) {
@@ -169,12 +221,15 @@ fun MovieDetailScreenContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 MovieHeader(
-                    modifier = Modifier.padding(start = 12.dp),
-                    rating = rating,
+                    ratingKp = ratingKp,
+                    ratingImdb = ratingImdb,
                     year = year,
                     countries = countries,
                     length = length,
-                    genres = genres
+                    genres = genres,
+                    logoUrl = logoUrl,
+                    name = name,
+                    ageRating = ageRating
                 )
                 MovieDescription(
                     description = description
@@ -185,8 +240,8 @@ fun MovieDetailScreenContent(
                 ReviewsList(
                     reviews = reviews
                 )
-                for (i in 0..100) {
-                    Text(text = "Hello, Movies!")
+                for (i in 0..50) {
+                    Text(text = "Text $i")
                 }
             }
         }
@@ -196,30 +251,48 @@ fun MovieDetailScreenContent(
 @Composable
 private fun MovieHeader(
     modifier: Modifier = Modifier,
-    rating: Rating? = null,
+    ratingKp: String?,
+    ratingImdb: String?,
     year: String,
-    countries: List<Country>? = null,
-    length: String,
-    genres: List<Genre>? = null
+    countries: List<String>?,
+    length: String?,
+    genres: List<String>?,
+    logoUrl: String?,
+    name: String,
+    ageRating: String
 ) {
     Column(
         modifier = modifier
     ) {
-        Image(
+        Box(
             modifier = Modifier
                 .height(80.dp)
                 .padding(bottom = 8.dp),
-            painter = painterResource(R.drawable.movie_logo),
-            contentDescription = null
-        )
+            contentAlignment = Alignment.BottomStart
+        ) {
+            if (logoUrl != null) {
+                AsyncImage(
+                    modifier = Modifier.fillMaxHeight(),
+                    model = logoUrl,
+                    contentDescription = null
+                )
+            } else {
+                Text(
+                    text = name,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = White
+                )
+            }
+        }
         Row(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (rating != null) {
-                KpRatingCard(rating = rating.kp)
-                ImdbRatingCard(rating = rating.imdb)
-            }
+            ratingKp?.let { KpRatingCard(rating = it) }
+            ratingImdb?.let { ImdbRatingCard(rating = it) }
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -238,7 +311,7 @@ private fun MovieHeader(
                 color = Color(0xFF7E7E7E)
             )
             Text(
-                text = length,
+                text = length ?: "",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF7E7E7E)
@@ -250,6 +323,12 @@ private fun MovieHeader(
         ) {
             Text(
                 text = genres?.joinToString() ?: "",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF7E7E7E)
+            )
+            Text(
+                text = ageRating,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF7E7E7E)
@@ -267,7 +346,6 @@ fun MovieDescription(
         modifier = modifier
     ) {
         Text(
-//            modifier = Modifier.padding(horizontal = 16.dp),
             text = "Description",
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
@@ -279,14 +357,13 @@ fun MovieDescription(
 @Composable
 private fun TrailersList(
     modifier: Modifier = Modifier,
-    trailers: List<Trailer>? = null
+    trailers: List<Video>? = null
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-//            modifier = Modifier.padding(horizontal = 16.dp),
             text = "Trailers",
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
@@ -296,7 +373,7 @@ private fun TrailersList(
         ) {
             if (trailers != null) {
                 items(trailers) {
-                    TrailerCard(trailerUrl = it.url.toString())
+                    TrailerCard(trailerUrl = it.url)
                 }
             }
         }
@@ -313,7 +390,6 @@ fun ReviewsList(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-//            modifier = Modifier.padding(horizontal = 16.dp),
             text = "Reviews",
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
@@ -345,96 +421,96 @@ fun ReviewsList(
 @Composable
 private fun MovieDetailScreenPreview() {
     MoviesTheme {
-        MovieDetailScreenContent(
-            name = "Третий лишний",
-            rating = Rating(kp = 4.5, imdb = 5.3),
-            year = 2023.toString(),
-            length = "1ч 23мин",
-            genres = listOf(Genre(name = "Боевик"), Genre(name = "Драма")),
-            countries = listOf(Country(name = "Россия"), Country(name = "США")),
-            description = "Пострадав в результате несчастного случая, богатый аристократ Филипп " +
-                    "нанимает в помощники человека, который менее всего подходит для этой работы, " +
-                    "– молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. " +
-                    "Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается " +
-                    "привнести в размеренную жизнь аристократа дух приключений.",
-            posterUrl = "https://image.openmoviedb.com/tmdb-images/original/hvptcK6WmDqu4xZZ0WuBQ3vYInE.png",
-            trailers = listOf(
-                Trailer(),
-                Trailer(),
-                Trailer()
-            ),
-            reviews = listOf(
-                Review(
-                    id = 1,
-                    movieId = 101,
-                    title = "Оставил сильное впечатление",
-                    review = "Фильм приятно удивил своей глубиной. Сюжет хорошо выстроен, а актёрская игра вызывает доверие. " +
-                            "Особенно хочется отметить музыкальное сопровождение — оно добавляет атмосферы и усиливает эмоциональные сцены. \n" +
-                            "Редкий случай, когда всё складывается в цельную картину, которую хочется пересмотреть.",
-                    type = "Позитивный",
-                    date = "6 июня, 2025",
-                    author = "Егор Фомин",
-                    userRating = 9,
-                    likes = 132,
-                    dislikes = 11
-                ),
-                Review(
-                    id = 2,
-                    movieId = 101,
-                    title = "Обычное кино",
-                    review = "Фильм получился довольно стандартным. Никаких откровений, но и провалов тоже нет. " +
-                            "Сюжет предсказуемый, местами скучноват, но в целом смотрибельно. \n" +
-                            "Можно глянуть под настроение, но в памяти не задержится надолго.",
-                    type = "Нейтральный",
-                    date = "10 июля, 2025",
-                    author = "Лена Степанова",
-                    userRating = 6,
-                    likes = 64,
-                    dislikes = 27
-                ),
-                Review(
-                    id = 3,
-                    movieId = 101,
-                    title = "Норм, но не более",
-                    review = "Кино как кино. Были хорошие сцены, но общая динамика провисает. " +
-                            "Диалоги местами казались неестественными, персонажи недоработаны. \n" +
-                            "Не жалею, что посмотрел, но второй раз вряд ли захочу.",
-                    type = "Нейтральный",
-                    date = "16 июля, 2025",
-                    author = "Сергей Головин",
-                    userRating = 5,
-                    likes = 49,
-                    dislikes = 32
-                ),
-                Review(
-                    id = 4,
-                    movieId = 101,
-                    title = "Можно посмотреть",
-                    review = "Если не ждать многого, фильм зайдёт. Простенький сюжет, пара удачных актёрских ролей, и в целом — ок. " +
-                            "Визуально выглядит неплохо, но ощущение, что чего-то не хватает. \n" +
-                            "Для вечернего просмотра подойдёт.",
-                    type = "Нейтральный",
-                    date = "21 июля, 2025",
-                    author = "Марина Ветрова",
-                    userRating = 6,
-                    likes = 58,
-                    dislikes = 19
-                ),
-                Review(
-                    id = 5,
-                    movieId = 101,
-                    title = "Разочарование",
-                    review = "Слишком затянуто и местами откровенно скучно. Ожидания были выше — трейлер обещал больше, чем дал сам фильм. \n" +
-                            "Актёры старались, но слабый сценарий всё испортил. После просмотра остаётся только недоумение и сожаление о потраченном времени.",
-                    type = "Негативный",
-                    date = "29 июля, 2025",
-                    author = "Кирилл Орлов",
-                    userRating = 3,
-                    likes = 22,
-                    dislikes = 67
-                )
-            )
-        )
+//        MovieDetailScreenContent(
+//            name = "Третий лишний",
+//            rating = Rating(kp = 4.5, imdb = 5.3),
+//            year = 2023.toString(),
+//            length = "1ч 23мин",
+//            genres = listOf(Genre(name = "Боевик"), Genre(name = "Драма")),
+//            countries = listOf(Country(name = "Россия"), Country(name = "США")),
+//            description = "Пострадав в результате несчастного случая, богатый аристократ Филипп " +
+//                    "нанимает в помощники человека, который менее всего подходит для этой работы, " +
+//                    "– молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. " +
+//                    "Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается " +
+//                    "привнести в размеренную жизнь аристократа дух приключений.",
+//            posterUrl = "https://image.openmoviedb.com/tmdb-images/original/hvptcK6WmDqu4xZZ0WuBQ3vYInE.png",
+//            trailers = listOf(
+//                Trailer(),
+//                Trailer(),
+//                Trailer()
+//            ),
+//            reviews = listOf(
+//                Review(
+//                    id = 1,
+//                    movieId = 101,
+//                    title = "Оставил сильное впечатление",
+//                    review = "Фильм приятно удивил своей глубиной. Сюжет хорошо выстроен, а актёрская игра вызывает доверие. " +
+//                            "Особенно хочется отметить музыкальное сопровождение — оно добавляет атмосферы и усиливает эмоциональные сцены. \n" +
+//                            "Редкий случай, когда всё складывается в цельную картину, которую хочется пересмотреть.",
+//                    type = "Позитивный",
+//                    date = "6 июня, 2025",
+//                    author = "Егор Фомин",
+//                    userRating = 9,
+//                    likes = 132,
+//                    dislikes = 11
+//                ),
+//                Review(
+//                    id = 2,
+//                    movieId = 101,
+//                    title = "Обычное кино",
+//                    review = "Фильм получился довольно стандартным. Никаких откровений, но и провалов тоже нет. " +
+//                            "Сюжет предсказуемый, местами скучноват, но в целом смотрибельно. \n" +
+//                            "Можно глянуть под настроение, но в памяти не задержится надолго.",
+//                    type = "Нейтральный",
+//                    date = "10 июля, 2025",
+//                    author = "Лена Степанова",
+//                    userRating = 6,
+//                    likes = 64,
+//                    dislikes = 27
+//                ),
+//                Review(
+//                    id = 3,
+//                    movieId = 101,
+//                    title = "Норм, но не более",
+//                    review = "Кино как кино. Были хорошие сцены, но общая динамика провисает. " +
+//                            "Диалоги местами казались неестественными, персонажи недоработаны. \n" +
+//                            "Не жалею, что посмотрел, но второй раз вряд ли захочу.",
+//                    type = "Нейтральный",
+//                    date = "16 июля, 2025",
+//                    author = "Сергей Головин",
+//                    userRating = 5,
+//                    likes = 49,
+//                    dislikes = 32
+//                ),
+//                Review(
+//                    id = 4,
+//                    movieId = 101,
+//                    title = "Можно посмотреть",
+//                    review = "Если не ждать многого, фильм зайдёт. Простенький сюжет, пара удачных актёрских ролей, и в целом — ок. " +
+//                            "Визуально выглядит неплохо, но ощущение, что чего-то не хватает. \n" +
+//                            "Для вечернего просмотра подойдёт.",
+//                    type = "Нейтральный",
+//                    date = "21 июля, 2025",
+//                    author = "Марина Ветрова",
+//                    userRating = 6,
+//                    likes = 58,
+//                    dislikes = 19
+//                ),
+//                Review(
+//                    id = 5,
+//                    movieId = 101,
+//                    title = "Разочарование",
+//                    review = "Слишком затянуто и местами откровенно скучно. Ожидания были выше — трейлер обещал больше, чем дал сам фильм. \n" +
+//                            "Актёры старались, но слабый сценарий всё испортил. После просмотра остаётся только недоумение и сожаление о потраченном времени.",
+//                    type = "Негативный",
+//                    date = "29 июля, 2025",
+//                    author = "Кирилл Орлов",
+//                    userRating = 3,
+//                    likes = 22,
+//                    dislikes = 67
+//                )
+//            )
+//        )
     }
 }
 
@@ -445,95 +521,95 @@ private fun MovieDetailScreenPreview() {
 @Composable
 private fun MovieDetailScreenDarkThemePreview() {
     MoviesTheme {
-        MovieDetailScreenContent(
-            name = "Третий лишний",
-            rating = Rating(kp = 4.5, imdb = 5.3),
-            year = 2023.toString(),
-            length = "1ч 23мин",
-            genres = listOf(Genre(name = "Боевик"), Genre(name = "Драма")),
-            countries = listOf(Country(name = "Россия"), Country(name = "США")),
-            description = "Пострадав в результате несчастного случая, богатый аристократ Филипп " +
-                    "нанимает в помощники человека, который менее всего подходит для этой работы, " +
-                    "– молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. " +
-                    "Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается " +
-                    "привнести в размеренную жизнь аристократа дух приключений.",
-            posterUrl = "https://image.openmoviedb.com/tmdb-images/original/hvptcK6WmDqu4xZZ0WuBQ3vYInE.png",
-            trailers = listOf(
-                Trailer(),
-                Trailer(),
-                Trailer()
-            ),
-            reviews = listOf(
-                Review(
-                    id = 1,
-                    movieId = 101,
-                    title = "Оставил сильное впечатление",
-                    review = "Фильм приятно удивил своей глубиной. Сюжет хорошо выстроен, а актёрская игра вызывает доверие. " +
-                            "Особенно хочется отметить музыкальное сопровождение — оно добавляет атмосферы и усиливает эмоциональные сцены. \n" +
-                            "Редкий случай, когда всё складывается в цельную картину, которую хочется пересмотреть.",
-                    type = "Позитивный",
-                    date = "6 июня, 2025",
-                    author = "Егор Фомин",
-                    userRating = 9,
-                    likes = 132,
-                    dislikes = 11
-                ),
-                Review(
-                    id = 2,
-                    movieId = 101,
-                    title = "Обычное кино",
-                    review = "Фильм получился довольно стандартным. Никаких откровений, но и провалов тоже нет. " +
-                            "Сюжет предсказуемый, местами скучноват, но в целом смотрибельно. \n" +
-                            "Можно глянуть под настроение, но в памяти не задержится надолго.",
-                    type = "Нейтральный",
-                    date = "10 июля, 2025",
-                    author = "Лена Степанова",
-                    userRating = 6,
-                    likes = 64,
-                    dislikes = 27
-                ),
-                Review(
-                    id = 3,
-                    movieId = 101,
-                    title = "Норм, но не более",
-                    review = "Кино как кино. Были хорошие сцены, но общая динамика провисает. " +
-                            "Диалоги местами казались неестественными, персонажи недоработаны. \n" +
-                            "Не жалею, что посмотрел, но второй раз вряд ли захочу.",
-                    type = "Нейтральный",
-                    date = "16 июля, 2025",
-                    author = "Сергей Головин",
-                    userRating = 5,
-                    likes = 49,
-                    dislikes = 32
-                ),
-                Review(
-                    id = 4,
-                    movieId = 101,
-                    title = "Можно посмотреть",
-                    review = "Если не ждать многого, фильм зайдёт. Простенький сюжет, пара удачных актёрских ролей, и в целом — ок. " +
-                            "Визуально выглядит неплохо, но ощущение, что чего-то не хватает. \n" +
-                            "Для вечернего просмотра подойдёт.",
-                    type = "Нейтральный",
-                    date = "21 июля, 2025",
-                    author = "Марина Ветрова",
-                    userRating = 6,
-                    likes = 58,
-                    dislikes = 19
-                ),
-                Review(
-                    id = 5,
-                    movieId = 101,
-                    title = "Разочарование",
-                    review = "Слишком затянуто и местами откровенно скучно. Ожидания были выше — трейлер обещал больше, чем дал сам фильм. \n" +
-                            "Актёры старались, но слабый сценарий всё испортил. После просмотра остаётся только недоумение и сожаление о потраченном времени.",
-                    type = "Негативный",
-                    date = "29 июля, 2025",
-                    author = "Кирилл Орлов",
-                    userRating = 3,
-                    likes = 22,
-                    dislikes = 67
-                )
-            )
-        )
+//        MovieDetailScreenContent(
+//            name = "Третий лишний",
+//            rating = Rating(kp = 4.5, imdb = 5.3),
+//            year = 2023.toString(),
+//            length = "1ч 23мин",
+//            genres = listOf(Genre(name = "Боевик"), Genre(name = "Драма")),
+//            countries = listOf(Country(name = "Россия"), Country(name = "США")),
+//            description = "Пострадав в результате несчастного случая, богатый аристократ Филипп " +
+//                    "нанимает в помощники человека, который менее всего подходит для этой работы, " +
+//                    "– молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. " +
+//                    "Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается " +
+//                    "привнести в размеренную жизнь аристократа дух приключений.",
+//            posterUrl = "https://image.openmoviedb.com/tmdb-images/original/hvptcK6WmDqu4xZZ0WuBQ3vYInE.png",
+//            trailers = listOf(
+//                Trailer(),
+//                Trailer(),
+//                Trailer()
+//            ),
+//            reviews = listOf(
+//                Review(
+//                    id = 1,
+//                    movieId = 101,
+//                    title = "Оставил сильное впечатление",
+//                    review = "Фильм приятно удивил своей глубиной. Сюжет хорошо выстроен, а актёрская игра вызывает доверие. " +
+//                            "Особенно хочется отметить музыкальное сопровождение — оно добавляет атмосферы и усиливает эмоциональные сцены. \n" +
+//                            "Редкий случай, когда всё складывается в цельную картину, которую хочется пересмотреть.",
+//                    type = "Позитивный",
+//                    date = "6 июня, 2025",
+//                    author = "Егор Фомин",
+//                    userRating = 9,
+//                    likes = 132,
+//                    dislikes = 11
+//                ),
+//                Review(
+//                    id = 2,
+//                    movieId = 101,
+//                    title = "Обычное кино",
+//                    review = "Фильм получился довольно стандартным. Никаких откровений, но и провалов тоже нет. " +
+//                            "Сюжет предсказуемый, местами скучноват, но в целом смотрибельно. \n" +
+//                            "Можно глянуть под настроение, но в памяти не задержится надолго.",
+//                    type = "Нейтральный",
+//                    date = "10 июля, 2025",
+//                    author = "Лена Степанова",
+//                    userRating = 6,
+//                    likes = 64,
+//                    dislikes = 27
+//                ),
+//                Review(
+//                    id = 3,
+//                    movieId = 101,
+//                    title = "Норм, но не более",
+//                    review = "Кино как кино. Были хорошие сцены, но общая динамика провисает. " +
+//                            "Диалоги местами казались неестественными, персонажи недоработаны. \n" +
+//                            "Не жалею, что посмотрел, но второй раз вряд ли захочу.",
+//                    type = "Нейтральный",
+//                    date = "16 июля, 2025",
+//                    author = "Сергей Головин",
+//                    userRating = 5,
+//                    likes = 49,
+//                    dislikes = 32
+//                ),
+//                Review(
+//                    id = 4,
+//                    movieId = 101,
+//                    title = "Можно посмотреть",
+//                    review = "Если не ждать многого, фильм зайдёт. Простенький сюжет, пара удачных актёрских ролей, и в целом — ок. " +
+//                            "Визуально выглядит неплохо, но ощущение, что чего-то не хватает. \n" +
+//                            "Для вечернего просмотра подойдёт.",
+//                    type = "Нейтральный",
+//                    date = "21 июля, 2025",
+//                    author = "Марина Ветрова",
+//                    userRating = 6,
+//                    likes = 58,
+//                    dislikes = 19
+//                ),
+//                Review(
+//                    id = 5,
+//                    movieId = 101,
+//                    title = "Разочарование",
+//                    review = "Слишком затянуто и местами откровенно скучно. Ожидания были выше — трейлер обещал больше, чем дал сам фильм. \n" +
+//                            "Актёры старались, но слабый сценарий всё испортил. После просмотра остаётся только недоумение и сожаление о потраченном времени.",
+//                    type = "Негативный",
+//                    date = "29 июля, 2025",
+//                    author = "Кирилл Орлов",
+//                    userRating = 3,
+//                    likes = 22,
+//                    dislikes = 67
+//                )
+//            )
+//        )
     }
 }

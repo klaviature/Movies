@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,14 +16,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -36,18 +33,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import com.example.movies.R
-import com.example.movies.domain.model.Movie
-import com.example.movies.domain.model.Rating
 import com.example.movies.presentation.ui.theme.MoviesTheme
 import java.util.Locale
 
 @Composable
 fun MovieCard(
     modifier: Modifier = Modifier,
-    posterUrl: String? = null,
-    rating: Rating? = null,
+    posterUrl: String?,
+    ratingKp: String?,
+    ratingImdb: String?,
     onClick: () -> Unit = {},
     overridePainter: Painter? = null
 ) {
@@ -55,6 +51,7 @@ fun MovieCard(
         modifier = modifier
             .height(280.dp)
             .fillMaxWidth()
+            .clip(CardDefaults.shape)
             .clickable(onClick = onClick)
     ) {
         Box(
@@ -69,23 +66,25 @@ fun MovieCard(
                 )
             } else {
                 posterUrl?.let {
-                    AsyncImage(
+                    SubcomposeAsyncImage(
                         model = it,
-                        contentDescription = null
+                        contentDescription = null,
+                        loading = {
+                            CircularProgressIndicator()
+                        },
+                        contentScale = ContentScale.Crop
                     )
                 }
             }
 
-            rating?.let {
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    KpRatingCard(rating = it.kp)
-                    ImdbRatingCard(rating = it.imdb)
-                }
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                ratingKp?.let{ KpRatingCard(rating = it) }
+                ratingImdb?.let{ ImdbRatingCard(rating = it) }
             }
         }
     }
@@ -96,8 +95,10 @@ fun MovieCard(
 private fun MovieCardPreview(modifier: Modifier = Modifier) {
     MoviesTheme {
         MovieCard(
-            rating = Rating(5.2, 5.2),
-            overridePainter = painterResource(R.drawable.intouchables)
+            ratingKp = "5.2",
+            ratingImdb = "5.2",
+            overridePainter = painterResource(R.drawable.intouchables),
+            posterUrl = null
         )
     }
 }
@@ -135,7 +136,7 @@ private fun RatingPreview() {
 @Composable
 fun KpRatingCard(
     modifier: Modifier = Modifier,
-    rating: Double
+    rating: String
 ) {
     Box(
         modifier = modifier
@@ -154,7 +155,7 @@ fun KpRatingCard(
             )
             Text(
                 modifier = Modifier.weight(1f),
-                text = rating.toString(),
+                text = rating,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
                 textAlign = TextAlign.End,
@@ -169,14 +170,14 @@ fun KpRatingCard(
 @Composable
 private fun KpRatingCardPreview() {
     MoviesTheme {
-        KpRatingCard(rating = 10.0)
+        KpRatingCard(rating = "10.0")
     }
 }
 
 @Composable
 fun ImdbRatingCard(
     modifier: Modifier = Modifier,
-    rating: Double
+    rating: String
 ) {
     Box(
         modifier = modifier
@@ -199,7 +200,7 @@ fun ImdbRatingCard(
             )
             Text(
                 modifier = Modifier.weight(1f),
-                text = rating.toString(),
+                text = rating,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
                 textAlign = TextAlign.End,
@@ -214,6 +215,6 @@ fun ImdbRatingCard(
 @Composable
 private fun ImdbRatingCardPreview() {
     MoviesTheme {
-        ImdbRatingCard(rating = 10.0)
+        ImdbRatingCard(rating = "10.0")
     }
 }

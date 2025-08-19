@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.example.movies.data.database.MovieDatabase
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDeprecated
 import com.example.movies.toMovie
 
 class WatchedViewModel(application: Application) : AndroidViewModel(application) {
@@ -15,7 +15,7 @@ class WatchedViewModel(application: Application) : AndroidViewModel(application)
     private val watchedMoviesDao =
         MovieDatabase.getInstance(getApplication<Application>().applicationContext).watchedMoviesDao()
 
-    fun getMovies(): LiveData<List<Movie>> {
+    fun getMovies(): LiveData<List<MovieDeprecated>> {
         return watchedMoviesDao.getWatchedMovies().map { it -> it.map { it.toMovie() } }
     }
 }

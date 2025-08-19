@@ -1,6 +1,6 @@
 package com.example.movies.data.api.kinopoisk
 
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDeprecated
 import com.example.movies.data.model.MovieResponse
 import com.example.movies.data.model.ReviewResponse
 import io.reactivex.rxjava3.core.Single
@@ -21,7 +21,7 @@ interface ApiService {
     @Headers("X-API-KEY:3Y0FDCK-WTCMVES-H6QS5G9-9VM6446")
     fun loadMovie(
         @Path("id") id: Int
-    ): Single<Movie>
+    ): Single<MovieDeprecated>
 
     @GET("review")
     @Headers("X-API-KEY:3Y0FDCK-WTCMVES-H6QS5G9-9VM6446")

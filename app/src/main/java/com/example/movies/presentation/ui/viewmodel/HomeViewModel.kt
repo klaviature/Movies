@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.movies.data.api.kinopoisk.ApiFactory
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDeprecated
 import com.example.movies.data.model.MovieResponse
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -16,8 +16,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val LOG_TAG = "MainViewModel"
 
-    private val _movies: MutableLiveData<List<Movie>> = MutableLiveData()
-    val movies: LiveData<List<Movie>> = _movies
+    private val _movies: MutableLiveData<List<MovieDeprecated>> = MutableLiveData()
+    val movies: LiveData<List<MovieDeprecated>> = _movies
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading

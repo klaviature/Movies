@@ -2,10 +2,10 @@ package com.example.movies
 
 import com.example.movies.data.database.FavouriteMovieEntity
 import com.example.movies.data.database.WatchedMovieEntity
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDeprecated
 
-fun FavouriteMovieEntity.toMovie(): Movie {
-    return Movie(
+fun FavouriteMovieEntity.toMovie(): MovieDeprecated {
+    return MovieDeprecated(
         id = this.id,
         name = this.name,
         alternativeName = this.alternativeName,
@@ -19,8 +19,8 @@ fun FavouriteMovieEntity.toMovie(): Movie {
     )
 }
 
-fun WatchedMovieEntity.toMovie(): Movie {
-    return Movie(
+fun WatchedMovieEntity.toMovie(): MovieDeprecated {
+    return MovieDeprecated(
         id = this.id,
         name = this.name,
         alternativeName = this.alternativeName,
@@ -34,7 +34,7 @@ fun WatchedMovieEntity.toMovie(): Movie {
     )
 }
 
-fun Movie.toFavouriteMovie(): FavouriteMovieEntity {
+fun MovieDeprecated.toFavouriteMovie(): FavouriteMovieEntity {
     return FavouriteMovieEntity(
         id = this.id,
         name = this.name,
@@ -49,7 +49,7 @@ fun Movie.toFavouriteMovie(): FavouriteMovieEntity {
     )
 }
 
-fun Movie.toWatchedMovie(): WatchedMovieEntity {
+fun MovieDeprecated.toWatchedMovie(): WatchedMovieEntity {
     return WatchedMovieEntity(
         id = this.id,
         name = this.name,

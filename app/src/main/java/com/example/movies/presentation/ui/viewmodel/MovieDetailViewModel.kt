@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.movies.data.api.kinopoisk.ApiFactory
 import com.example.movies.data.database.MovieDatabase
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDeprecated
 import com.example.movies.domain.model.Review
 import com.example.movies.data.model.ReviewResponse
 import com.example.movies.toFavouriteMovie
@@ -29,8 +29,8 @@ class MovieDetailViewModel(application: Application) : AndroidViewModel(applicat
         MovieDatabase.getInstance(getApplication<Application>().applicationContext)
             .watchedMoviesDao()
 
-    private val _movie: MutableLiveData<Movie> = MutableLiveData()
-    val movie: LiveData<Movie> = _movie
+    private val _movie: MutableLiveData<MovieDeprecated> = MutableLiveData()
+    val movie: LiveData<MovieDeprecated> = _movie
 
     private val _isInFavourites: MutableLiveData<Boolean> = MutableLiveData(false)
     val isInFavourites: LiveData<Boolean> = _isInFavourites
@@ -121,7 +121,7 @@ class MovieDetailViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun toggleFavourite(movie: Movie, action: (Boolean) -> Unit = { }) {
+    fun toggleFavourite(movie: MovieDeprecated, action: (Boolean) -> Unit = { }) {
         var inFavouritesToAction = false
         val disposable =
             favouriteMoviesDao.isMovieInFavourites(movie.id)
@@ -148,7 +148,7 @@ class MovieDetailViewModel(application: Application) : AndroidViewModel(applicat
         compositeDisposable.add(disposable)
     }
 
-    fun toggleWatched(movie: Movie, action: (Boolean) -> Unit = {  }) {
+    fun toggleWatched(movie: MovieDeprecated, action: (Boolean) -> Unit = {  }) {
         var inWatchedToAction = false
         val disposable = watchedMoviesDao.isMovieWatched(movie.id)
             .flatMapCompletable { isWatched ->

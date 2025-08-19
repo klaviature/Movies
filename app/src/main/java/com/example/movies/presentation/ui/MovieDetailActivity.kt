@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movies.R
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDeprecated
 import com.example.movies.databinding.ActivityMovieDetailBinding
 import com.example.movies.presentation.ui.adapters.ReviewsRecyclerViewAdapter
 import com.example.movies.presentation.ui.adapters.TrailersRecyclerViewAdapter
@@ -36,8 +36,8 @@ class MovieDetailActivity : AppCompatActivity() {
 
     private val reviewFragment = ReviewFragment()
 
-    private var id: Int = -1;
-    private var movie: Movie? = null
+    private var id: Int = -1
+    private var movie: MovieDeprecated? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()

@@ -1,14 +1,14 @@
 package com.example.movies.domain.repositories
 
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDeprecated
 import kotlinx.coroutines.flow.Flow
 
 interface FavouritesRepository {
-    fun getFavouriteMovies(): Flow<List<Movie>>
+    fun getFavouriteMovies(): Flow<List<MovieDeprecated>>
 
-    suspend fun addToFavourites(movie: Movie): Result<Unit>
+    suspend fun addToFavourites(movie: MovieDeprecated): Result<Unit>
 
-    suspend fun removeFromFavourites(movie: Movie): Result<Unit>
+    suspend fun removeFromFavourites(movie: MovieDeprecated): Result<Unit>
 
-    suspend fun isFavourite(movie: Movie): Boolean
+    suspend fun isFavourite(movie: MovieDeprecated): Boolean
 }

@@ -1,13 +1,18 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
     namespace = "com.example.movies"
     compileSdk = 35
+
+
 
     defaultConfig {
         applicationId = "com.example.movies"
@@ -17,6 +22,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val apiKey: String = gradleLocalProperties(rootDir, providers).getProperty("API_KEY")
+
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {
@@ -40,6 +49,7 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
+        buildConfig = true
     }
 }
 
@@ -50,7 +60,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     androidTestImplementation(libs.androidx.ui.test.junit4)
     // =================================== Compose ================================================
-    val composeBom = platform("androidx.compose:compose-bom:2025.05.00")
+//    val composeBom = platform("androidx.compose:compose-bom:2025.05.00")
+    val composeBom = platform("androidx.compose:compose-bom:2025.08.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
@@ -64,7 +75,7 @@ dependencies {
     // Optional - Integration with activities
     // implementation("androidx.activity:activity-compose:1.10.1")
     // Optional - Integration with ViewModels
-    // implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+     implementation(libs.androidx.lifecycle.viewmodel.compose)
     // Optional - Integration with LiveData
     // implementation("androidx.compose.runtime:runtime-livedata")
     // Optional - Integration with RxJava
@@ -72,6 +83,7 @@ dependencies {
 
     // ====================================== Coil ================================================
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // ===================================== Other ================================================
 

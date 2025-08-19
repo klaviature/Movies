@@ -9,18 +9,18 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movies.R
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDeprecated
 import com.example.movies.databinding.MovieItemBinding
 
 class MoviesRecyclerViewAdapter() :
     RecyclerView.Adapter<MoviesRecyclerViewAdapter.ViewHolder>() {
 
-    private var movies: List<Movie> = emptyList()
+    private var movies: List<MovieDeprecated> = emptyList()
 
     private var onEndReachListener: OnEndReachListener? = null
     private var onMovieClickListener: OnMovieClickListener? = null
 
-    fun setMovies(movies: List<Movie>) {
+    fun setMovies(movies: List<MovieDeprecated>) {
         this.movies = movies
         notifyDataSetChanged()
     }
@@ -84,7 +84,7 @@ class MoviesRecyclerViewAdapter() :
     }
 
     fun interface OnMovieClickListener {
-        fun onMovieClick(movie: Movie)
+        fun onMovieClick(movie: MovieDeprecated)
     }
 
     fun interface OnEndReachListener {
