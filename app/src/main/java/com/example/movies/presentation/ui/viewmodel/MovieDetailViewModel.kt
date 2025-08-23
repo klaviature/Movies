@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.movies.data.api.kinopoisk.ApiFactory
 import com.example.movies.data.database.MovieDatabase
 import com.example.movies.domain.model.MovieDeprecated
-import com.example.movies.domain.model.Review
+import com.example.movies.domain.model.ReviewDeprecated
 import com.example.movies.data.model.ReviewResponse
 import com.example.movies.toFavouriteMovie
 import com.example.movies.toMovie
@@ -38,8 +38,8 @@ class MovieDetailViewModel(application: Application) : AndroidViewModel(applicat
     private val _isInWatched: MutableLiveData<Boolean> = MutableLiveData(false)
     val isInWatched: LiveData<Boolean> = _isInWatched
 
-    private val _reviews: MutableLiveData<List<Review>> = MutableLiveData()
-    val reviews: LiveData<List<Review>> = _reviews
+    private val _reviews: MutableLiveData<List<ReviewDeprecated>> = MutableLiveData()
+    val reviews: LiveData<List<ReviewDeprecated>> = _reviews
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading

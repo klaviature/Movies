@@ -4,11 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movies.data.repository.MoviesRepositoryImpl
+import com.example.movies.data.repository.ReviewsRepositoryImpl
 import com.example.movies.domain.model.ApiResult
 import com.example.movies.domain.model.Movie
 import com.example.movies.domain.model.Review
+import com.example.movies.domain.model.ReviewDeprecated
 import com.example.movies.domain.model.Video
 import com.example.movies.domain.usecases.GetMovieUseCase
+import com.example.movies.domain.usecases.GetReviewsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -19,11 +22,15 @@ class MovieDetailViewModel : ViewModel() {
     private val _state = MutableStateFlow(MovieDetailState())
     val state get() = _state.asStateFlow()
 
+    private var reviewsPage: Int = 1
+
     private val getMovieUseCase = GetMovieUseCase(MoviesRepositoryImpl)
+    private val getReviewsUseCase = GetReviewsUseCase(ReviewsRepositoryImpl)
 
     fun loadMovieInfo(movieId: Int) {
         viewModelScope.launch {
             Log.d("MovieDetailViewModel", "loadMovieInfo: started")
+            reviewsPage = 1
             val result = getMovieUseCase(movieId)
             when (result) {
                 ApiResult.Error.Forbidden -> {
@@ -43,10 +50,53 @@ class MovieDetailViewModel : ViewModel() {
                 }
 
                 is ApiResult.Success -> {
-                    _state.value = result.data.toUiState()
-                    Log.d("MovieDetailViewModel", "loadMovieInfo: success")
+                    result.data.toUiState().also {
+                        _state.value = _state.value.copy(
+                            name = it.name,
+                            type = it.type,
+                            year = it.year,
+                            description = it.description,
+                            length = it.length,
+                            ageRating = it.ageRating,
+                            posterUrl = it.posterUrl,
+                            backdropUrl = it.backdropUrl,
+                            logoUrl = it.logoUrl,
+                            ratingKp = it.ratingKp,
+                            ratingImdb = it.ratingImdb,
+                            trailers = it.trailers,
+                            genres = it.genres,
+                            countries = it.countries
+                        )
+                    }
+                    Log.d("MovieDetailViewModel", "loadMovieInfo: success: ${result.data}")
                 }
             }
+        }
+    }
+
+    fun loadReviews(movieId: Int) {
+        viewModelScope.launch {
+            Log.d("MovieDetailViewModel", "loadReviews: started")
+            val result = getReviewsUseCase(movieId, reviewsPage)
+            when (result) {
+                ApiResult.Error.Forbidden -> {
+                    Log.d("MovieDetailViewModel", "loadReviews: forbidden")
+                }
+                ApiResult.Error.NotFound -> {
+                    Log.d("MovieDetailViewModel", "loadReviews: not found")
+                }
+                ApiResult.Error.Unauthorized -> {
+                    Log.d("MovieDetailViewModel", "loadReviews: unauthorized")
+                }
+                is ApiResult.Error.Unknown -> {
+                    Log.d("MovieDetailViewModel", "loadReviews: unknown")
+                }
+                is ApiResult.Success -> {
+                    Log.d("MovieDetailViewModel", "loadReviews: success: ${result.data}")
+                    _state.value = _state.value.copy(reviews = result.data)
+                }
+            }
+            reviewsPage++
         }
     }
 }

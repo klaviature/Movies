@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.movies.domain.model.Review
+import com.example.movies.domain.model.ReviewDeprecated
 import com.example.movies.databinding.FragmentReviewBinding
 import com.example.movies.formatDate
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -15,7 +15,7 @@ class ReviewFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentReviewBinding
 
-    var review: Review? = null
+    var review: ReviewDeprecated? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

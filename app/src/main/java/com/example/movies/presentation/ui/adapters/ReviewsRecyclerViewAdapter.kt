@@ -8,14 +8,14 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movies.R
-import com.example.movies.domain.model.Review
+import com.example.movies.domain.model.ReviewDeprecated
 import com.example.movies.databinding.ReviewItemBinding
 import com.example.movies.formatDate
 import com.example.movies.presentation.ui.adapters.MoviesRecyclerViewAdapter.OnEndReachListener
 
 class ReviewsRecyclerViewAdapter() : RecyclerView.Adapter<ReviewsRecyclerViewAdapter.ViewHolder>() {
 
-    private var reviews: List<Review> = emptyList()
+    private var reviews: List<ReviewDeprecated> = emptyList()
 
     private val POSITIVE = "Позитивный"
     private val NEGATIVE = "Негативный"
@@ -67,7 +67,7 @@ class ReviewsRecyclerViewAdapter() : RecyclerView.Adapter<ReviewsRecyclerViewAda
     }
 
     fun interface OnReviewClickListener {
-        fun onReviewClick(review: Review)
+        fun onReviewClick(review: ReviewDeprecated)
     }
 
     fun setOnEndReachListener(listener: OnEndReachListener) {
@@ -78,7 +78,7 @@ class ReviewsRecyclerViewAdapter() : RecyclerView.Adapter<ReviewsRecyclerViewAda
         onReviewClickListener = listener
     }
 
-    fun setReviews(reviews: List<Review>) {
+    fun setReviews(reviews: List<ReviewDeprecated>) {
         this.reviews = reviews
         notifyDataSetChanged()
     }

@@ -3,6 +3,10 @@ package com.example.movies.domain.model
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
+@Deprecated(
+    message = "Is not compatible with app",
+    replaceWith = ReplaceWith(expression = "Movie()")
+)
 data class MovieDeprecated(
     @SerializedName("id") var id: Int,
     @SerializedName("name") var name: String? = null,

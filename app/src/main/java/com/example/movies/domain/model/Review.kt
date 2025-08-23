@@ -1,27 +1,14 @@
 package com.example.movies.domain.model
 
-import com.google.gson.annotations.SerializedName
-import java.io.Serializable
-
 data class Review(
-    @SerializedName("id")
     val id: Int,
-    @SerializedName("movieId")
     val movieId: Int,
-    @SerializedName("title")
     val title: String,
-    @SerializedName("review")
-    val review: String,
-    @SerializedName("type")
-    val type: String,
-    @SerializedName("date")
+    val text: String,
+    val type: ReviewType,
     val date: String,
-    @SerializedName("author")
     val author: String,
-    @SerializedName("userRating")
-    val userRating: Int,
-    @SerializedName("reviewLikes")
+    val authorRating: Int,
     val likes: Int,
-    @SerializedName("reviewDislikes")
     val dislikes: Int
-) : Serializable
+)

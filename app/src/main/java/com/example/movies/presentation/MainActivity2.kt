@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.movies.presentation.ui.MyNavigationBar
 import com.example.movies.presentation.ui.home.HomeScreen
+import com.example.movies.presentation.ui.moviedetailscreen.MovieDetailScreen
 import com.example.movies.presentation.ui.theme.MoviesTheme
 import dev.chrisbanes.haze.rememberHazeState
 
@@ -22,8 +23,8 @@ class MainActivity2 : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MoviesTheme {
-                MainScreen()
-//                MovieDetailScreen()
+//                MainScreen()
+                MovieDetailScreen()
             }
         }
     }

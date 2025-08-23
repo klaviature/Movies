@@ -21,8 +21,13 @@ data class ReviewDto(
 )
 
 @Serializable
-sealed class ReviewTypeDto {
-    @SerialName("позитивный") data object Positive : ReviewTypeDto()
-    @SerialName("негативный") data object Negative : ReviewTypeDto()
-    @SerialName("нейтральный") data object Neutral : ReviewTypeDto()
+enum class ReviewTypeDto {
+    @SerialName("Позитивный")
+    POSITIVE,
+
+    @SerialName("Негативный")
+    NEGATIVE,
+
+    @SerialName("Нейтральный")
+    NEUTRAL
 }
