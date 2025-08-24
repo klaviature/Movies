@@ -102,4 +102,9 @@
     <string name="movies">Фильмы</string>
     <string name="loading">Загрузка...</string>
     <string name="title_activity_main2">MainActivity2</string>
+
+    <string name="home_label">Home</string>
+    <string name="watched_label">Watched</string>
+    <string name="favourites_label">Favourites</string>
+    <string name="settings_label">Settings</string>
 </resources>

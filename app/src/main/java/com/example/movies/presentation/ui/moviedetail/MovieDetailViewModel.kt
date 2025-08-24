@@ -1,4 +1,4 @@
-package com.example.movies.presentation.ui.moviedetailscreen
+package com.example.movies.presentation.ui.moviedetail
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,7 +8,6 @@ import com.example.movies.data.repository.ReviewsRepositoryImpl
 import com.example.movies.domain.model.ApiResult
 import com.example.movies.domain.model.Movie
 import com.example.movies.domain.model.Review
-import com.example.movies.domain.model.ReviewDeprecated
 import com.example.movies.domain.model.Video
 import com.example.movies.domain.usecases.GetMovieUseCase
 import com.example.movies.domain.usecases.GetReviewsUseCase
@@ -26,6 +25,10 @@ class MovieDetailViewModel : ViewModel() {
 
     private val getMovieUseCase = GetMovieUseCase(MoviesRepositoryImpl)
     private val getReviewsUseCase = GetReviewsUseCase(ReviewsRepositoryImpl)
+
+    init {
+        Log.d("MovieDetailViewModel", "Viewmodel was created")
+    }
 
     fun loadMovieInfo(movieId: Int) {
         viewModelScope.launch {
@@ -68,7 +71,7 @@ class MovieDetailViewModel : ViewModel() {
                             countries = it.countries
                         )
                     }
-                    Log.d("MovieDetailViewModel", "loadMovieInfo: success: ${result.data}")
+                    Log.d("MovieDetailViewModel", "loadMovieInfo: success")
                 }
             }
         }
@@ -92,7 +95,7 @@ class MovieDetailViewModel : ViewModel() {
                     Log.d("MovieDetailViewModel", "loadReviews: unknown")
                 }
                 is ApiResult.Success -> {
-                    Log.d("MovieDetailViewModel", "loadReviews: success: ${result.data}")
+                    Log.d("MovieDetailViewModel", "loadReviews: success")
                     _state.value = _state.value.copy(reviews = result.data)
                 }
             }

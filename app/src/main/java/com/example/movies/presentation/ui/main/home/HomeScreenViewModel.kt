@@ -1,4 +1,4 @@
-package com.example.movies.presentation.ui.home
+package com.example.movies.presentation.ui.main.home
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -22,6 +22,7 @@ class HomeScreenViewModel : ViewModel() {
 
     init {
         getRecommendedMovies()
+        Log.d("HomeScreenViewModel", "Viewmodel was created")
     }
 
     fun getRecommendedMovies() {
@@ -49,7 +50,7 @@ class HomeScreenViewModel : ViewModel() {
                 is ApiResult.Success -> {
                     _movies.value = _movies.value.copy(movies = result.data)
                     Log.d("HomeScreenViewModel", "getRecommendedMovies: success")
-                    Log.d("HomeScreenViewModel", "getRecommendedMovies: ${result.data}")
+//                    Log.d("HomeScreenViewModel", "getRecommendedMovies: ${result.data}")
                 }
             }
             _movies.value = _movies.value.copy(isRefreshing = false)

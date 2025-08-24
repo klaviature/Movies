@@ -1,4 +1,4 @@
-package com.example.movies.presentation.ui.home
+package com.example.movies.presentation.ui.main.home
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,6 +14,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ fun HomeScreen(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     hazeState: HazeState = rememberHazeState(),
     viewModel: HomeScreenViewModel = viewModel(),
+    onMovieClick: (Int) -> Unit = {}
 ) {
     val movies = viewModel.movies.collectAsState().value
 //    val movies = testMovies
@@ -48,7 +50,8 @@ fun HomeScreen(
         modifier = Modifier
             .hazeSource(hazeState)
             .fillMaxSize(),
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
+        onMovieClick = onMovieClick
     )
 }
 
@@ -59,7 +62,8 @@ fun HomeScreenContent(
     movies: List<Movie>,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    onMovieClick: (Int) -> Unit = {}
 ) {
     val listState = rememberLazyGridState()
 
@@ -127,7 +131,8 @@ fun HomeScreenContent(
                         8.dp,
                 bottom = contentPadding.calculateBottomPadding()
             ),
-            state = listState
+            state = listState,
+            onMovieClick = onMovieClick
         )
     }
 }

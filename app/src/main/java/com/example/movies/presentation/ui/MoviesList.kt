@@ -19,7 +19,8 @@ fun MoviesList(
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    movies: List<Movie> = listOf()
+    movies: List<Movie> = listOf(),
+    onMovieClick: (Int) -> Unit = {}
 ) {
     LazyVerticalGrid(
         modifier = modifier,
@@ -32,7 +33,8 @@ fun MoviesList(
                 modifier = Modifier.padding(8.dp),
                 ratingKp = it.rating.kp?.toString(),
                 ratingImdb = it.rating.imdb?.toString(),
-                posterUrl = it.poster.url
+                posterUrl = it.poster.url,
+                onClick = { onMovieClick(it.id) }
             )
         }
     }

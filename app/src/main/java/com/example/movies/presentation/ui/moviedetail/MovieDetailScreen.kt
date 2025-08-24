@@ -1,4 +1,4 @@
-package com.example.movies.presentation.ui.moviedetailscreen
+package com.example.movies.presentation.ui.moviedetail
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
@@ -11,14 +11,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -59,10 +56,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.example.movies.R
 import com.example.movies.domain.model.Review
@@ -79,9 +77,11 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
 
+// movieId for previews: 535341 (1 + 1 movie)
 @Composable
 fun MovieDetailScreen(
-    movieId: Int = 535341, // TODO Implement an Navigation with args
+    navController: NavHostController = rememberNavController(),
+    movieId: Int,
     viewModel: MovieDetailViewModel = viewModel()
 ) {
     val state = viewModel.state.collectAsState()
@@ -108,6 +108,9 @@ fun MovieDetailScreen(
         logoUrl = state.value.logoUrl,
         isFavourite = state.value.isFavourite,
         isWatched = state.value.isWatched,
+        onBackPressed = {
+            navController.popBackStack()
+        }
     )
 }
 
