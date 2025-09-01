@@ -5,8 +5,9 @@ import com.example.movies.domain.model.Movie
 import com.example.movies.domain.model.Result
 import com.example.movies.domain.repositories.MoviesRepositoryTest
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class AddMovieToFavouritesUseCase(
+class AddMovieToFavouritesUseCase @Inject constructor(
     private val moviesRepository: MoviesRepositoryTest
 ) {
     suspend operator fun invoke(movie: Movie): Flow<Result<Unit, DataError.Local>> {

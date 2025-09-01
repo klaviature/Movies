@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:enableOnBackInvokedCallback="true"
         android:supportsRtl="true"
+        android:name=".MoviesApplication"
         android:theme="@style/Theme.Movies">
         <activity
             android:name=".presentation.MainActivity2"

@@ -5,8 +5,9 @@ import com.example.movies.domain.model.Movie
 import com.example.movies.domain.model.Result
 import com.example.movies.domain.repositories.MoviesRepositoryTest
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class GetRecommendedMoviesUseCase(
+class GetRecommendedMoviesUseCase @Inject constructor(
     private val repository: MoviesRepositoryTest
 ) {
     suspend operator fun invoke(page: Int): Flow<Result<List<Movie>, DataError.Network>> {

@@ -1,12 +1,10 @@
 package com.example.movies.presentation.ui.moviedetail
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movies.data.database.MovieDatabase
-import com.example.movies.data.repository.MoviesRepositoryImplTest
-import com.example.movies.data.repository.ReviewsRepositoryImpl
+import androidx.navigation.toRoute
 import com.example.movies.domain.model.ApiResult
 import com.example.movies.domain.model.DataError
 import com.example.movies.domain.model.Movie
@@ -21,68 +19,40 @@ import com.example.movies.domain.usecases.GetMovieUseCaseTest
 import com.example.movies.domain.usecases.GetReviewsUseCase
 import com.example.movies.domain.usecases.RemoveMovieFromFavouritesUseCase
 import com.example.movies.domain.usecases.RemoveMovieFromWatchedUseCase
+import com.example.movies.presentation.ui.main.home.HomeNavGraph
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Collections.emptyList
 import java.util.Locale.getDefault
+import javax.inject.Inject
 
-class MovieDetailViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class MovieDetailViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val getMovieUseCase: GetMovieUseCaseTest,
+    private val getReviewsUseCase: GetReviewsUseCase,
+    private val addMovieToFavouritesUseCase: AddMovieToFavouritesUseCase,
+    private val removeMovieFromFavouritesUseCase: RemoveMovieFromFavouritesUseCase,
+    private val checkIfMovieIsFavouriteUseCase: CheckIfMovieIsFavouriteUseCase,
+    private val addMovieToWatchedUseCase: AddMovieToWatchedUseCase,
+    private val removeMovieFromWatchedUseCase: RemoveMovieFromWatchedUseCase,
+    private val checkIfMovieIsWatchedUseCase: CheckIfMovieIsWatchedUseCase
+) : ViewModel() {
     private val _state = MutableStateFlow(MovieDetailState())
     val state get() = _state.asStateFlow()
 
     private var reviewsPage: Int = 1
 
-    private val getMovieUseCase = GetMovieUseCaseTest(
-        MoviesRepositoryImplTest(
-            dao = MovieDatabase.getInstance(getApplication<Application>().applicationContext)
-                .movieDao()
-        )
-    )
-    private val getReviewsUseCase = GetReviewsUseCase(ReviewsRepositoryImpl)
-
-    private val addMovieToFavouritesUseCase = AddMovieToFavouritesUseCase(
-        MoviesRepositoryImplTest(
-            dao = MovieDatabase.getInstance(getApplication<Application>().applicationContext)
-                .movieDao()
-        )
-    )
-    private val removeMovieFromFavouritesUseCase = RemoveMovieFromFavouritesUseCase(
-        MoviesRepositoryImplTest(
-            dao = MovieDatabase.getInstance(getApplication<Application>().applicationContext)
-                .movieDao()
-        )
-    )
-    private val checkIfMovieIsFavouriteUseCase = CheckIfMovieIsFavouriteUseCase(
-        MoviesRepositoryImplTest(
-            dao = MovieDatabase.getInstance(getApplication<Application>().applicationContext)
-                .movieDao()
-        )
-    )
-    private val addMovieToWatchedUseCase = AddMovieToWatchedUseCase(
-        MoviesRepositoryImplTest(
-            dao = MovieDatabase.getInstance(getApplication<Application>().applicationContext)
-                .movieDao()
-        )
-    )
-    private val removeMovieFromWatchedUseCase = RemoveMovieFromWatchedUseCase(
-        MoviesRepositoryImplTest(
-            dao = MovieDatabase.getInstance(getApplication<Application>().applicationContext)
-                .movieDao()
-        )
-    )
-    private val checkIfMovieIsWatchedUseCase = CheckIfMovieIsWatchedUseCase(
-        MoviesRepositoryImplTest(
-            dao = MovieDatabase.getInstance(getApplication<Application>().applicationContext)
-                .movieDao()
-        )
-    )
-
+    private val movieId: Int = savedStateHandle.toRoute<HomeNavGraph.MovieDetails>().movieId
     private var currentMovie: Movie? = null
 
     init {
         Log.d("MovieDetailViewModel", "Viewmodel was created")
+        meme(movieId)
+        loadReviews(movieId)
     }
 
     fun meme(movieId: Int) {

@@ -63,6 +63,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -85,14 +87,10 @@ fun MovieDetailScreen(
     navController: NavHostController = rememberNavController(),
     movieId: Int,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    viewModel: MovieDetailViewModel = viewModel(),
+    viewModel: MovieDetailViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val state = viewModel.state.collectAsState()
-    LaunchedEffect(movieId) {
-        viewModel.meme(movieId)
-        viewModel.loadReviews(movieId)
-    }
     LaunchedEffect(state.value.message) {
         state.value.message?.let {
             snackbarHostState.showSnackbar(it)

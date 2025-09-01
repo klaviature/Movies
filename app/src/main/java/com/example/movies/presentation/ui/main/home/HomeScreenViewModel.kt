@@ -3,6 +3,7 @@ package com.example.movies.presentation.ui.main.home
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movies.data.database.MovieDatabase
 import com.example.movies.data.repository.MoviesRepositoryImpl
@@ -12,25 +13,22 @@ import com.example.movies.domain.model.Movie
 import com.example.movies.domain.model.Result
 import com.example.movies.domain.usecases.recommended.GetRecommendedMoviesUseCase
 import com.example.movies.domain.usecases.recommended.SearchMoviesUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeScreenViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val getRecommendedMoviesUseCase = GetRecommendedMoviesUseCase(
-        MoviesRepositoryImplTest(
-            dao = MovieDatabase.getInstance(getApplication<Application>().applicationContext).movieDao()
-        )
-    )
-    private val searchMoviesUseCase = SearchMoviesUseCase(MoviesRepositoryImpl)
-
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor(
+    private val getRecommendedMoviesUseCase: GetRecommendedMoviesUseCase
+) : ViewModel() {
     private val _state = MutableStateFlow<HomeScreenState>(HomeScreenState())
     val state = _state.asStateFlow()
 
     init {
-//        getRecommendedMovies()
+        load()
         Log.d("HomeScreenViewModel", "Viewmodel was created")
     }
 
@@ -83,38 +81,6 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
-
-//    fun getRecommendedMovies() {
-//        viewModelScope.launch {
-//            Log.d("HomeScreenViewModel", "getRecommendedMovies: started")
-//            _movies.value = _movies.value.copy(isRefreshing = true)
-//            val result = getRecommendedMoviesUseCase(1)
-//            when (result) {
-//                ApiResult.Error.Forbidden -> {
-//                    Log.d("HomeScreenViewModel", "getRecommendedMovies: forbidden")
-//                }
-//
-//                ApiResult.Error.NotFound -> {
-//                    Log.d("HomeScreenViewModel", "getRecommendedMovies: not found")
-//                }
-//
-//                ApiResult.Error.Unauthorized -> {
-//                    Log.d("HomeScreenViewModel", "getRecommendedMovies: unauthorized")
-//                }
-//
-//                is ApiResult.Error.Unknown -> {
-//                    Log.d("HomeScreenViewModel", "getRecommendedMovies: ${result.message}")
-//                }
-//
-//                is ApiResult.Success -> {
-//                    _movies.value = _movies.value.copy(movies = result.data)
-//                    Log.d("HomeScreenViewModel", "getRecommendedMovies: success")
-////                    Log.d("HomeScreenViewModel", "getRecommendedMovies: ${result.data}")
-//                }
-//            }
-//            _movies.value = _movies.value.copy(isRefreshing = false)
-//        }
-//    }
 }
 
 data class HomeScreenState(

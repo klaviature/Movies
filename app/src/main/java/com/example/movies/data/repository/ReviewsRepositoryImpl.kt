@@ -1,14 +1,18 @@
 package com.example.movies.data.repository
 
 import com.example.movies.data.api.ApiFactoryCoroutines
+import com.example.movies.data.api.ApiServiceCoroutines
 import com.example.movies.data.mapper.toDomain
 import com.example.movies.domain.model.ApiResult
 import com.example.movies.domain.model.Review
 import com.example.movies.domain.repositories.ReviewsRepository
 import java.io.IOException
+import javax.inject.Inject
 
-object ReviewsRepositoryImpl : ReviewsRepository {
-    private val apiService = ApiFactoryCoroutines.apiService
+class ReviewsRepositoryImpl @Inject constructor(
+    private val apiService: ApiServiceCoroutines
+) : ReviewsRepository {
+//    private val apiService = ApiFactoryCoroutines.apiService
 
     override suspend fun getReviews(movieId: Int, page: Int): ApiResult<List<Review>> {
         return try {

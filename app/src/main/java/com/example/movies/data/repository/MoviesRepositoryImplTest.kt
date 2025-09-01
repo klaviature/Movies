@@ -16,9 +16,10 @@ import com.example.movies.domain.repositories.MoviesRepositoryTest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
+import javax.inject.Inject
 
-class MoviesRepositoryImplTest(
-    val dao: MovieDao
+class MoviesRepositoryImplTest @Inject constructor(
+    private val dao: MovieDao
 ) : MoviesRepositoryTest {
 
     private companion object {
