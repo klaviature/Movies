@@ -1,4 +1,4 @@
-package com.example.movies.data.model
+package com.example.movies.data.api.model
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName

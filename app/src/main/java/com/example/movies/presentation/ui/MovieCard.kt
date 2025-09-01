@@ -70,7 +70,12 @@ fun MovieCard(
                         model = it,
                         contentDescription = null,
                         loading = {
-                            CircularProgressIndicator()
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
                         },
                         contentScale = ContentScale.Crop
                     )
@@ -140,16 +145,21 @@ fun KpRatingCard(
 ) {
     Box(
         modifier = modifier
-            .size(70.dp, 25.dp)
+            .size(60.dp, 25.dp)
             .clip(CardDefaults.shape)
             .background(Color.Black)
             .padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.White)
+                    .size(17.dp)
+                    .padding(2.dp),
                 imageVector = ImageVector.vectorResource(R.drawable.kinopoisk_colored_logo),
                 contentDescription = null
             )
@@ -158,7 +168,7 @@ fun KpRatingCard(
                 text = rating,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                textAlign = TextAlign.End,
+                textAlign = TextAlign.Center,
                 fontSize = 12.sp,
                 lineHeight = 12.sp
             )
@@ -181,20 +191,20 @@ fun ImdbRatingCard(
 ) {
     Box(
         modifier = modifier
-            .size(70.dp, 25.dp)
+            .size(60.dp, 25.dp)
             .clip(CardDefaults.shape)
             .background(Color.Black)
             .padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
                     .background(Color.Yellow)
-                    .padding(horizontal = 2.dp),
+                    .size(17.dp),
                 imageVector = ImageVector.vectorResource(R.drawable.imdb_logo),
                 contentDescription = null
             )
@@ -203,7 +213,7 @@ fun ImdbRatingCard(
                 text = rating,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                textAlign = TextAlign.End,
+                textAlign = TextAlign.Center,
                 fontSize = 12.sp,
                 lineHeight = 12.sp
             )
@@ -215,6 +225,6 @@ fun ImdbRatingCard(
 @Composable
 private fun ImdbRatingCardPreview() {
     MoviesTheme {
-        ImdbRatingCard(rating = "10.0")
+        ImdbRatingCard(rating = "9.0")
     }
 }

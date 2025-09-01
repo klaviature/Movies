@@ -1,9 +1,11 @@
-package com.example.movies.data.model
+package com.example.movies.data.api.model
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-data class SearchMovieResponseDto(
-    @SerialName("docs") val docs: List<SearchMovieDto>,
+@Serializable
+data class MovieDocsResponseDto(
+    @SerialName("docs") val docs: List<MovieDto>,
     @SerialName("total") val total: Int,
     @SerialName("limit") val limit: Int,
     @SerialName("page") val page: Int,

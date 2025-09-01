@@ -1,11 +1,11 @@
-package com.example.movies.data.model
+package com.example.movies.data.api.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MoviesDto(
-    @SerialName("docs") val docs: List<MovieDto>? = null,
+data class ReviewDocsResponseDto(
+    @SerialName("docs") val docs: List<ReviewDto>? = null,
     @SerialName("total") val total: Int? = null,
     @SerialName("limit") val limit: Int? = null,
     @SerialName("page") val page: Int? = null,

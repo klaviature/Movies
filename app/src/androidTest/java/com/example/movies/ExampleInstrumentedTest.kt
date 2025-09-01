@@ -3,7 +3,7 @@ package com.example.movies
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.movies.data.api.kinopoisk.ApiFactoryCoroutines
+import com.example.movies.data.api.ApiFactoryCoroutines
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test

@@ -1,8 +1,8 @@
-package com.example.movies.data.api.kinopoisk
+package com.example.movies.data.api
 
 import com.example.movies.domain.model.MovieDeprecated
-import com.example.movies.data.model.MovieResponse
-import com.example.movies.data.model.ReviewResponse
+import com.example.movies.data.api.model.MovieResponse
+import com.example.movies.data.api.model.ReviewResponse
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Headers

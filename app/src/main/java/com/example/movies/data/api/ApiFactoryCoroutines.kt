@@ -1,4 +1,4 @@
-package com.example.movies.data.api.kinopoisk
+package com.example.movies.data.api
 
 import com.example.movies.BuildConfig
 import kotlinx.serialization.json.Json

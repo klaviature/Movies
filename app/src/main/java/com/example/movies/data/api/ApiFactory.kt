@@ -1,4 +1,4 @@
-package com.example.movies.data.api.kinopoisk
+package com.example.movies.data.api
 
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory

@@ -5,17 +5,19 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -24,12 +26,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -43,6 +47,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,55 +66,84 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import com.example.movies.R
+import com.example.movies.convertUtcToLocal
 import com.example.movies.domain.model.Review
 import com.example.movies.domain.model.Video
+import com.example.movies.presentation.ui.ExpandableText
 import com.example.movies.presentation.ui.ImdbRatingCard
 import com.example.movies.presentation.ui.KpRatingCard
 import com.example.movies.presentation.ui.ReviewCard
 import com.example.movies.presentation.ui.TrailerCard
 import com.example.movies.presentation.ui.theme.MoviesTheme
-import dev.chrisbanes.haze.HazeProgressive
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
-import dev.chrisbanes.haze.materials.HazeMaterials
-import dev.chrisbanes.haze.rememberHazeState
 
 // movieId for previews: 535341 (1 + 1 movie)
 @Composable
 fun MovieDetailScreen(
     navController: NavHostController = rememberNavController(),
     movieId: Int,
-    viewModel: MovieDetailViewModel = viewModel()
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    viewModel: MovieDetailViewModel = viewModel(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val state = viewModel.state.collectAsState()
     LaunchedEffect(movieId) {
-        viewModel.loadMovieInfo(movieId)
+        viewModel.meme(movieId)
         viewModel.loadReviews(movieId)
+    }
+    LaunchedEffect(state.value.message) {
+        state.value.message?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.messageShown()
+        }
+    }
+    LaunchedEffect(state.value.error) {
+        state.value.error?.let {
+            snackbarHostState.showSnackbar(
+                when (it) {
+                    MovieDetailState.Error.Local.Critical -> "Ошибка базы данных"
+                    MovieDetailState.Error.Network.Forbidden -> "Ошибка доступа к ресурсу"
+                    MovieDetailState.Error.Network.NotFound -> "Ресурс не найден"
+                    MovieDetailState.Error.Network.Unauthorized -> "Ошибка авторизации"
+                    is MovieDetailState.Error.Network.Unknown -> "Неизвестная ошибка: ${it.message}"
+                }
+            )
+            viewModel.errorShown()
+        }
     }
 
     MovieDetailScreenContent(
-        name = state.value.name,
-        type = state.value.type,
-        year = state.value.year,
-        description = state.value.description,
-        length = state.value.length,
-        ageRating = state.value.ageRating,
-        posterUrl = state.value.posterUrl,
-        ratingKp = state.value.ratingKp,
-        ratingImdb = state.value.ratingImdb,
-        trailers = state.value.trailers ?: emptyList(),
-        genres = state.value.genres,
-        countries = state.value.countries,
+        contentPadding = contentPadding,
+        isLoading = state.value.isLoading,
+        name = state.value.movie.name,
+        type = state.value.movie.type,
+        year = state.value.movie.year,
+        description = state.value.movie.description,
+        length = state.value.movie.length,
+        ageRating = state.value.movie.ageRating,
+        posterUrl = state.value.movie.posterUrl,
+        ratingKp = state.value.movie.ratingKp,
+        ratingImdb = state.value.movie.ratingImdb,
+        trailers = state.value.movie.trailers ?: emptyList(),
+        genres = state.value.movie.genres,
+        countries = state.value.movie.countries,
         reviews = state.value.reviews,
-        backdropUrl = state.value.backdropUrl,
-        logoUrl = state.value.logoUrl,
+        backdropUrl = state.value.movie.backdropUrl,
+        logoUrl = state.value.movie.logoUrl,
         isFavourite = state.value.isFavourite,
         isWatched = state.value.isWatched,
+        isFavouriteLoading = state.value.isFavouriteLoading,
+        isWatchedLoading = state.value.isWatchedLoading,
         onBackPressed = {
             navController.popBackStack()
+        },
+        onAddToFavouritesClick = {
+            viewModel.toggleFavouriteStatus()
+        },
+        onAddToWatchedClick = {
+            viewModel.toggleWatchedStatus()
         }
     )
 }
@@ -117,6 +151,7 @@ fun MovieDetailScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
 fun MovieDetailScreenContent(
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     name: String,
     type: String,
     year: String,
@@ -132,8 +167,11 @@ fun MovieDetailScreenContent(
     genres: List<String>?,
     countries: List<String>?,
     reviews: List<Review>,
+    isLoading: Boolean = false,
     isFavourite: Boolean = false,
     isWatched: Boolean = false,
+    isFavouriteLoading: Boolean = false,
+    isWatchedLoading: Boolean = false,
     onBackPressed: () -> Unit = { },
     onAddToFavouritesClick: () -> Unit = { },
     onAddToWatchedClick: () -> Unit = { }
@@ -152,19 +190,11 @@ fun MovieDetailScreenContent(
         animationSpec = tween(durationMillis = 300)
     )
 
-    val hazeState = rememberHazeState(blurEnabled = true)
-
     Scaffold(
         modifier = Modifier
             .nestedScroll(connection = scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-                modifier = Modifier
-                    .hazeEffect(state = hazeState, style = HazeMaterials.ultraThin()) {
-                        progressive = HazeProgressive.verticalGradient(
-                            startIntensity = 0.3f, endIntensity = 0f
-                        )
-                    },
                 title = {
                     AnimatedVisibility(visible = showAppBarContent) {
                         Text(text = name, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -200,15 +230,22 @@ fun MovieDetailScreenContent(
                         },
                         state = rememberTooltipState()
                     ) {
-                        IconButton(onClick = onAddToFavouritesClick) {
-                            Icon(
-                                imageVector = if (isFavourite) {
-                                    Icons.Filled.Favorite
-                                } else {
-                                    Icons.Outlined.FavoriteBorder
-                                },
-                                contentDescription = null
-                            )
+                        IconButton(
+                            onClick = onAddToFavouritesClick,
+                            enabled = !isFavouriteLoading
+                        ) {
+                            if (isFavouriteLoading) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                            } else {
+                                Icon(
+                                    imageVector = if (isFavourite) {
+                                        Icons.Filled.Favorite
+                                    } else {
+                                        Icons.Outlined.FavoriteBorder
+                                    },
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
                     TooltipBox(
@@ -224,17 +261,24 @@ fun MovieDetailScreenContent(
                                 )
                             }
                         },
-                        state = rememberTooltipState(initialIsVisible = true)
+                        state = rememberTooltipState()
                     ) {
-                        IconButton(onClick = onAddToWatchedClick) {
-                            Icon(
-                                imageVector = if (isWatched) {
-                                    ImageVector.vectorResource(R.drawable.eye_filled)
-                                } else {
-                                    ImageVector.vectorResource(R.drawable.eye_outlined)
-                                },
-                                contentDescription = null
-                            )
+                        IconButton(
+                            onClick = onAddToWatchedClick,
+                            enabled = !isWatchedLoading
+                        ) {
+                            if (isWatchedLoading) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                            } else {
+                                Icon(
+                                    imageVector = if (isWatched) {
+                                        ImageVector.vectorResource(R.drawable.eye_filled)
+                                    } else {
+                                        ImageVector.vectorResource(R.drawable.eye_outlined)
+                                    },
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
                 }
@@ -243,83 +287,88 @@ fun MovieDetailScreenContent(
     ) { innerPadding ->
         val scrollState = rememberScrollState()
 
-        AsyncImage(
-            modifier = Modifier
-                .hazeSource(hazeState)
-                .fillMaxWidth()
-                .height(450.dp),
-            model = backdropUrl ?: posterUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop
-        )
-        Box(
-            modifier = Modifier
-                .hazeSource(state = hazeState)
-                .fillMaxWidth()
-                .verticalScroll(state = scrollState)
-                .padding(innerPadding)
-                .padding(top = 140.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            MaterialTheme.colorScheme.background
-                        ),
-                        startY = 200f,
-                        endY = 450f
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
+            SubcomposeAsyncImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(450.dp),
+                model = backdropUrl ?: posterUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(state = scrollState)
+                    .padding(innerPadding)
+                    .padding(contentPadding)
+                    .padding(top = 150.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.background
+                            ),
+                            startY = 90f,
+                            endY = 450f
+                        )
                     )
-                )
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                MovieHeader(
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .consumeWindowInsets(innerPadding), // TODO РЕШИТЬ ПРОБЛЕМУ В Горизонтальной ориентации
-                    ratingKp = ratingKp,
-                    ratingImdb = ratingImdb,
-                    year = year,
-                    countries = countries,
-                    length = length,
-                    genres = genres,
-                    logoUrl = logoUrl,
-                    name = name,
-                    ageRating = ageRating
-                )
-                MovieDescription(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    description = description
-                )
-                if (trailers.isNotEmpty()) {
-                    TrailersList(
-                        trailers = trailers,
-                        contentPadding = PaddingValues(horizontal = 12.dp)
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    MovieHeader(
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp)
+                            .consumeWindowInsets(innerPadding), // TODO РЕШИТЬ ПРОБЛЕМУ В Горизонтальной ориентации
+                        ratingKp = ratingKp,
+                        ratingImdb = ratingImdb,
+                        year = year,
+                        countries = countries,
+                        length = length,
+                        genres = genres,
+                        logoUrl = logoUrl,
+                        name = name,
+                        ageRating = ageRating
                     )
-                }
-                if (reviews.isNotEmpty()) {
-                    ReviewsList(
-                        reviews = reviews,
-                        onItemClick = { review ->
-                            displayedReview = review
-                        },
-                        contentPadding = PaddingValues(horizontal = 12.dp)
+                    MovieDescription(
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        description = description
                     )
+                    if (trailers.isNotEmpty()) {
+                        TrailersList(
+                            trailers = trailers,
+                            contentPadding = PaddingValues(horizontal = 12.dp)
+                        )
+                    }
+                    if (reviews.isNotEmpty()) {
+                        ReviewsList(
+                            reviews = reviews,
+                            onItemClick = { review ->
+                                displayedReview = review
+                            },
+                            contentPadding = PaddingValues(horizontal = 12.dp)
+                        )
+                    }
                 }
             }
-        }
-        displayedReview?.let {
-            ReviewDetailSheet(
-                onDismissRequest = { displayedReview = null },
-                title = it.title,
-                text = it.text,
-                type = it.type,
-                date = it.date,
-                author = it.author,
-                authorRating = it.authorRating,
-                likes = it.likes,
-                dislikes = it.dislikes
-            )
+            displayedReview?.let {
+                ReviewDetailSheet(
+                    onDismissRequest = { displayedReview = null },
+                    title = it.title,
+                    text = it.text,
+                    type = it.type,
+                    date = it.date,
+                    author = it.author,
+                    authorRating = it.authorRating,
+                    likes = it.likes,
+                    dislikes = it.dislikes
+                )
+            }
         }
     }
 }
@@ -348,10 +397,11 @@ private fun MovieHeader(
             contentAlignment = Alignment.BottomStart
         ) {
             if (logoUrl != null) {
-                AsyncImage(
+                SubcomposeAsyncImage(
                     modifier = Modifier.fillMaxHeight(),
                     model = logoUrl,
-                    contentDescription = null
+                    contentDescription = null,
+                    alignment = Alignment.BottomStart
                 )
             } else {
                 Text(
@@ -371,68 +421,48 @@ private fun MovieHeader(
             ratingKp?.let { KpRatingCard(rating = it) }
             ratingImdb?.let { ImdbRatingCard(rating = it) }
         }
-        Row(
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = year,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isSystemInDarkTheme()) {
-                    Color(0xFF7E7E7E)
-                } else {
-                    Color(0xFF4D4D4D)
-                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 16.sp
             )
             Text(
                 text = countries?.joinToString() ?: "",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color =  if (isSystemInDarkTheme()) {
-                    Color(0xFF7E7E7E)
-                } else {
-                    Color(0xFF4D4D4D)
-                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 16.sp
             )
             Text(
                 text = length ?: "",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isSystemInDarkTheme()) {
-                    Color(0xFF7E7E7E)
-                } else {
-                    Color(0xFF4D4D4D)
-                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 16.sp
             )
         }
-        Row(
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = genres?.joinToString() ?: "",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isSystemInDarkTheme()) {
-                    Color(0xFF7E7E7E)
-                } else {
-                    Color(0xFF4D4D4D)
-                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 16.sp
             )
             Text(
                 text = ageRating,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isSystemInDarkTheme()) {
-                    Color(0xFF7E7E7E)
-                } else {
-                    Color(0xFF4D4D4D)
-                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 16.sp
             )
         }
@@ -440,24 +470,33 @@ private fun MovieHeader(
 }
 
 @Composable
-fun MovieDescription(
+private fun MovieDescription(
     modifier: Modifier = Modifier,
     description: String
 ) {
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
     Column(
-        modifier = modifier
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = "Description",
+            text = "Описание",
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
         )
-        Text(text = description, fontSize = 14.sp)
+        ExpandableText(
+            text = description,
+            showMoreText = "Показать еще",
+            showLessText = "Свернуть",
+            isExpanded = isExpanded,
+            onExpandedChange = { isExpanded = it },
+            collapsedMaxLines = 5
+        )
     }
 }
 
 @Composable
-private fun TrailersList(
+fun TrailersList(
     modifier: Modifier = Modifier,
     trailers: List<Video>,
     contentPadding: PaddingValues = PaddingValues()
@@ -468,7 +507,7 @@ private fun TrailersList(
     ) {
         Text(
             modifier = Modifier.padding(contentPadding),
-            text = "Trailers",
+            text = "Трейлеры",
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
         )
@@ -496,7 +535,7 @@ fun ReviewsList(
     ) {
         Text(
             modifier = Modifier.padding(contentPadding),
-            text = "Reviews",
+            text = "Рецензии",
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
         )
@@ -509,7 +548,7 @@ fun ReviewsList(
                     onClick = { onItemClick(it) },
                     title = it.title,
                     text = it.text,
-                    date = it.date,
+                    date = it.date.convertUtcToLocal("dd MMMM yyyy"),
                     author = it.author,
                     type = it.type,
                     likes = it.likes,
@@ -528,6 +567,7 @@ fun ReviewsList(
 private fun MovieDetailScreenPreview() {
     MoviesTheme {
         MovieDetailScreenContent(
+            isLoading = false,
             name = "1 + 1",
             type = "",
             year = "2025",
@@ -536,7 +576,7 @@ private fun MovieDetailScreenPreview() {
                     "– молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. " +
                     "Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается " +
                     "привнести в размеренную жизнь аристократа дух приключений.",
-            length = "123",
+            length = "123 мин",
             ageRating = "18+",
             posterUrl = "",
             backdropUrl = "",
@@ -545,101 +585,11 @@ private fun MovieDetailScreenPreview() {
             ratingImdb = "9.3",
             trailers = emptyList(),
             genres = listOf("Драма", "Комедия"),
-            countries = listOf("Франция", "США"),
+            countries = listOf("Франция", "США", "Япония", "Чехия"),
             reviews = emptyList(),
             isFavourite = false,
             isWatched = false
         )
-//        MovieDetailScreenContent(
-//            name = "Третий лишний",
-//            rating = Rating(kp = 4.5, imdb = 5.3),
-//            year = 2023.toString(),
-//            length = "1ч 23мин",
-//            genres = listOf(Genre(name = "Боевик"), Genre(name = "Драма")),
-//            countries = listOf(Country(name = "Россия"), Country(name = "США")),
-//            description = "Пострадав в результате несчастного случая, богатый аристократ Филипп " +
-//                    "нанимает в помощники человека, который менее всего подходит для этой работы, " +
-//                    "– молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. " +
-//                    "Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается " +
-//                    "привнести в размеренную жизнь аристократа дух приключений.",
-//            posterUrl = "https://image.openmoviedb.com/tmdb-images/original/hvptcK6WmDqu4xZZ0WuBQ3vYInE.png",
-//            trailers = listOf(
-//                Trailer(),
-//                Trailer(),
-//                Trailer()
-//            ),
-//            reviews = listOf(
-//                Review(
-//                    id = 1,
-//                    movieId = 101,
-//                    title = "Оставил сильное впечатление",
-//                    review = "Фильм приятно удивил своей глубиной. Сюжет хорошо выстроен, а актёрская игра вызывает доверие. " +
-//                            "Особенно хочется отметить музыкальное сопровождение — оно добавляет атмосферы и усиливает эмоциональные сцены. \n" +
-//                            "Редкий случай, когда всё складывается в цельную картину, которую хочется пересмотреть.",
-//                    type = "Позитивный",
-//                    date = "6 июня, 2025",
-//                    author = "Егор Фомин",
-//                    userRating = 9,
-//                    likes = 132,
-//                    dislikes = 11
-//                ),
-//                Review(
-//                    id = 2,
-//                    movieId = 101,
-//                    title = "Обычное кино",
-//                    review = "Фильм получился довольно стандартным. Никаких откровений, но и провалов тоже нет. " +
-//                            "Сюжет предсказуемый, местами скучноват, но в целом смотрибельно. \n" +
-//                            "Можно глянуть под настроение, но в памяти не задержится надолго.",
-//                    type = "Нейтральный",
-//                    date = "10 июля, 2025",
-//                    author = "Лена Степанова",
-//                    userRating = 6,
-//                    likes = 64,
-//                    dislikes = 27
-//                ),
-//                Review(
-//                    id = 3,
-//                    movieId = 101,
-//                    title = "Норм, но не более",
-//                    review = "Кино как кино. Были хорошие сцены, но общая динамика провисает. " +
-//                            "Диалоги местами казались неестественными, персонажи недоработаны. \n" +
-//                            "Не жалею, что посмотрел, но второй раз вряд ли захочу.",
-//                    type = "Нейтральный",
-//                    date = "16 июля, 2025",
-//                    author = "Сергей Головин",
-//                    userRating = 5,
-//                    likes = 49,
-//                    dislikes = 32
-//                ),
-//                Review(
-//                    id = 4,
-//                    movieId = 101,
-//                    title = "Можно посмотреть",
-//                    review = "Если не ждать многого, фильм зайдёт. Простенький сюжет, пара удачных актёрских ролей, и в целом — ок. " +
-//                            "Визуально выглядит неплохо, но ощущение, что чего-то не хватает. \n" +
-//                            "Для вечернего просмотра подойдёт.",
-//                    type = "Нейтральный",
-//                    date = "21 июля, 2025",
-//                    author = "Марина Ветрова",
-//                    userRating = 6,
-//                    likes = 58,
-//                    dislikes = 19
-//                ),
-//                Review(
-//                    id = 5,
-//                    movieId = 101,
-//                    title = "Разочарование",
-//                    review = "Слишком затянуто и местами откровенно скучно. Ожидания были выше — трейлер обещал больше, чем дал сам фильм. \n" +
-//                            "Актёры старались, но слабый сценарий всё испортил. После просмотра остаётся только недоумение и сожаление о потраченном времени.",
-//                    type = "Негативный",
-//                    date = "29 июля, 2025",
-//                    author = "Кирилл Орлов",
-//                    userRating = 3,
-//                    likes = 22,
-//                    dislikes = 67
-//                )
-//            )
-//        )
     }
 }
 
@@ -651,6 +601,7 @@ private fun MovieDetailScreenPreview() {
 private fun MovieDetailScreenDarkThemePreview() {
     MoviesTheme {
         MovieDetailScreenContent(
+            isLoading = false,
             name = "1 + 1",
             type = "",
             year = "2025",

@@ -1,7 +1,7 @@
 package com.example.movies
 
 import android.util.Log
-import com.example.movies.data.model.MovieDto
+import com.example.movies.data.api.model.MovieDto
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Test

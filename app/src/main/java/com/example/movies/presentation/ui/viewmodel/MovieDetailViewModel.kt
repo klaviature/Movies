@@ -5,11 +5,11 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.movies.data.api.kinopoisk.ApiFactory
+import com.example.movies.data.api.ApiFactory
 import com.example.movies.data.database.MovieDatabase
 import com.example.movies.domain.model.MovieDeprecated
 import com.example.movies.domain.model.ReviewDeprecated
-import com.example.movies.data.model.ReviewResponse
+import com.example.movies.data.api.model.ReviewResponse
 import com.example.movies.toFavouriteMovie
 import com.example.movies.toMovie
 import com.example.movies.toWatchedMovie

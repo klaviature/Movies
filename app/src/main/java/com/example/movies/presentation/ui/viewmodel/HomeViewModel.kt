@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.movies.data.api.kinopoisk.ApiFactory
+import com.example.movies.data.api.ApiFactory
 import com.example.movies.domain.model.MovieDeprecated
-import com.example.movies.data.model.MovieResponse
+import com.example.movies.data.api.model.MovieResponse
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable

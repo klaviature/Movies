@@ -3,6 +3,7 @@ package com.example.movies.presentation.ui.main
 import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -17,10 +18,14 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -36,9 +41,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.movies.R
-import com.example.movies.presentation.ui.main.home.HomeScreen
+import com.example.movies.presentation.ui.main.home.HomeScreenNav
+import com.example.movies.presentation.ui.main.settings.SettingsScreen
 import com.example.movies.presentation.ui.theme.MoviesTheme
 import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
@@ -123,6 +130,9 @@ fun MainScreen(
     // val favouritesViewModel: FavouritesScreenViewModel = viewModel()
     // val settingViewModel: SettingsScreenViewModel = viewModel()
 
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val hazeState = rememberHazeState(blurEnabled = true)
     Scaffold(
         modifier = Modifier
@@ -167,22 +177,33 @@ fun MainScreen(
                     )
                 }
             }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = startDestination.route
+            startDestination = startDestination.route,
+            modifier = Modifier.hazeSource(hazeState)
         ) {
             composable<MainNavGraph.Home> {
-                HomeScreen(
-                    contentPadding = innerPadding,
-                    hazeState = hazeState,
-                    onMovieClick = onMovieClick
+                HomeScreenNav(
+                    contentPadding = PaddingValues(
+                        bottom = innerPadding.calculateBottomPadding()
+                    ),
+                    snackbarHostState = snackbarHostState
                 )
             }
             composable<MainNavGraph.Watched> {  }
             composable<MainNavGraph.Favourites> {  }
-            composable<MainNavGraph.Settings> {  }
+            composable<MainNavGraph.Settings> {
+                SettingsScreen(
+                    contentPadding = PaddingValues(
+                        bottom = innerPadding.calculateBottomPadding()
+                    )
+                )
+            }
         }
     }
 }

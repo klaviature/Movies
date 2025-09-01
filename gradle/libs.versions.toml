@@ -22,7 +22,7 @@ activity = "1.9.2"
 constraintlayout = "2.1.4"
 navigationCompose = "2.9.3"
 retrofit = "2.11.0"
-roomRuntime = "2.6.1"
+roomRuntime = "2.7.2"
 roomRxjava3 = "room_version"
 rxandroid = "3.0.2"
 rxjava = "3.1.8"
@@ -34,6 +34,7 @@ fragmentKtx = "1.5.6"
 lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
 composeBom = "2024.04.01"
+turbine = "1.2.1"
 
 [libraries]
 adapterRxjava3 = {group = "com.squareup.retrofit2", name = "adapter-rxjava3", version.ref ="adapterRxjava3_version"}
@@ -77,6 +78,7 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

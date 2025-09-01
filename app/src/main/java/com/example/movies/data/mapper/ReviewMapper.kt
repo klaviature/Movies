@@ -1,9 +1,8 @@
 package com.example.movies.data.mapper
 
-import com.example.movies.data.model.ReviewDto
-import com.example.movies.data.model.ReviewTypeDto
+import com.example.movies.data.api.model.ReviewDto
+import com.example.movies.data.api.model.ReviewTypeDto
 import com.example.movies.domain.model.Review
-import com.example.movies.domain.model.ReviewDeprecated
 import com.example.movies.domain.model.ReviewType
 
 fun ReviewDto.toDomain() = Review(

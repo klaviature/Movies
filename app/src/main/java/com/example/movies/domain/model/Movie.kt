@@ -1,6 +1,6 @@
 package com.example.movies.domain.model
 
-import com.example.movies.data.model.MovieType
+import com.example.movies.data.api.model.MovieType
 
 data class Movie(
     val id: Int,
@@ -18,9 +18,9 @@ data class Movie(
     val videos: Videos?,
     val genres: List<String>,
     val countries: List<String>,
-    val reviewInfo: ReviewInfo,
-    val budget: CurrencyValue<Int>,
-    val fees: MovieFees,
+    val reviewInfo: ReviewInfo?,
+    val budget: CurrencyValue<Int>?,
+    val fees: MovieFees?,
     val similarMovies: List<LinkedMovie>?,
     val sequelsAndPrequels: List<LinkedMovie>?,
     val top10: Int?,
