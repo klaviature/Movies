@@ -85,12 +85,11 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 @Composable
 fun MovieDetailScreen(
     navController: NavHostController = rememberNavController(),
-    movieId: Int,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     viewModel: MovieDetailViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
-    val state = viewModel.state.collectAsState()
+    val state = viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.value.message) {
         state.value.message?.let {
             snackbarHostState.showSnackbar(it)

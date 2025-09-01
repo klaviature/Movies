@@ -33,7 +33,7 @@ fun MoviesTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = MoviesTypography,
         content = content
     )
 }

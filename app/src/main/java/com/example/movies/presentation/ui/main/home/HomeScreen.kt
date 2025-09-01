@@ -69,11 +69,9 @@ fun HomeScreenNav(
                 snackbarHostState = snackbarHostState
             )
         }
-        composable<HomeNavGraph.MovieDetails> {backStackEntry ->
-            val movieId = backStackEntry.toRoute<HomeNavGraph.MovieDetails>().movieId
+        composable<HomeNavGraph.MovieDetails> {
             MovieDetailScreen(
                 navController = navController,
-                movieId = movieId,
                 contentPadding = contentPadding,
                 snackbarHostState = snackbarHostState
             )

@@ -43,6 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.movies.R
 import com.example.movies.presentation.ui.main.home.HomeScreenNav
 import com.example.movies.presentation.ui.main.settings.SettingsScreen
+import com.example.movies.presentation.ui.main.watched.WatchedMoviesNavHost
 import com.example.movies.presentation.ui.theme.MoviesTheme
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
@@ -195,7 +196,15 @@ fun MainScreen(
                     snackbarHostState = snackbarHostState
                 )
             }
-            composable<MainNavGraph.Watched> {  }
+            composable<MainNavGraph.Watched> {
+                WatchedMoviesNavHost(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        bottom = innerPadding.calculateBottomPadding()
+                    ),
+                    snackbarHostState = snackbarHostState
+                )
+            }
             composable<MainNavGraph.Favourites> {  }
             composable<MainNavGraph.Settings> {
                 SettingsScreen(

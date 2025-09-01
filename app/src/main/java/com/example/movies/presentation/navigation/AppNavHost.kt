@@ -37,12 +37,5 @@ fun AppNavHost(
                 }
             )
         }
-        composable<RootNavGraph.MovieDetail> {  backStackEntry ->
-            val destination = backStackEntry.toRoute<RootNavGraph.MovieDetail>()
-            MovieDetailScreen(
-                navController = navController,
-                movieId = destination.movieId
-            )
-        }
     }
 }
