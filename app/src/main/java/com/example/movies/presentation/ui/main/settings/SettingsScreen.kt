@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
@@ -14,6 +16,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.movies.R
 import com.example.movies.presentation.ui.main.AppIcon
+import com.example.movies.presentation.ui.main.settings.api.ApiSettingsScreen
+import com.example.movies.presentation.ui.main.settings.theme.ThemeSettingsScreen
 import com.example.movies.presentation.ui.theme.MoviesTheme
 import kotlinx.serialization.Serializable
 
@@ -89,7 +93,8 @@ enum class SettingsItem(
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val navController = rememberNavController()
     val startDestination = SettingsNavGraph.Main
@@ -106,10 +111,17 @@ fun SettingsScreen(
             )
         }
         composable<SettingsNavGraph.Api> {
-
+            ApiSettingsScreen(
+                navController = navController,
+                contentPadding = contentPadding,
+                snackbarHostState = snackbarHostState
+            )
         }
         composable<SettingsNavGraph.Personalization> {
-
+            ThemeSettingsScreen(
+                navController = navController,
+                contentPadding = contentPadding
+            )
         }
         composable<SettingsNavGraph.Storage> {
 

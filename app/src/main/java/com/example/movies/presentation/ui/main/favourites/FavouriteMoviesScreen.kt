@@ -1,4 +1,4 @@
-package com.example.movies.presentation.ui.main.watched
+package com.example.movies.presentation.ui.main.favourites
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,18 +29,18 @@ import com.example.movies.presentation.ui.MoviesList
 import com.example.movies.presentation.ui.theme.MoviesTheme
 
 @Composable
-fun WatchedMoviesScreen(
+fun FavouriteMoviesScreen(
     navController: NavHostController,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    viewModel: WatchedScreenViewModel = hiltViewModel(),
+    viewModel: FavouritesScreenViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.value.error) {
         state.value.error?.let {
-            when (it) {
-                WatchedScreenState.Error.Critical -> {
+            when(it) {
+                FavouritesScreenState.Error.Critical -> {
                     snackbarHostState.showSnackbar("Ошибка чтения данных")
                 }
             }
@@ -53,19 +53,19 @@ fun WatchedMoviesScreen(
         }
     }
 
-    WatchedMoviesScreenContent(
+    FavouriteMoviesScreenContent(
         contentPadding = contentPadding,
         isLoading = state.value.isLoading,
         movies = state.value.movies,
         onMovieClick = { movieId ->
-            navController.navigate(WatchedNavGraph.MovieDetails(movieId))
+            navController.navigate(FavouritesNavGraph.MovieDetails(movieId))
         }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WatchedMoviesScreenContent(
+fun FavouriteMoviesScreenContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     isLoading: Boolean,
@@ -82,7 +82,7 @@ fun WatchedMoviesScreenContent(
         topBar = {
             MediumTopAppBar(
                 title = {
-                    Text(text = "Просмотренные фильмы")
+                    Text(text = "Избранные фильмы")
                 },
                 scrollBehavior = scrollBehavior
             )
@@ -117,9 +117,9 @@ fun WatchedMoviesScreenContent(
 
 @Preview
 @Composable
-private fun WatchedMoviesScreenPreview() {
+private fun FavouriteMoviesScreenPreview() {
     MoviesTheme {
-        WatchedMoviesScreenContent(
+        FavouriteMoviesScreenContent(
             isLoading = true,
             movies = emptyList(),
             onMovieClick = {}

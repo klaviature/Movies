@@ -5,6 +5,7 @@ coilCompose = "3.3.0"
 coilNetworkOkhttp = "3.3.0"
 converterGson = "2.9.0"
 converterKotlinxSerialization = "latest.version"
+datastorePreferences = "1.1.7"
 glide = "4.16.0"
 gson = "2.11.0"
 haze = "1.6.2"
@@ -42,6 +43,7 @@ turbine = "1.2.1"
 [libraries]
 adapterRxjava3 = {group = "com.squareup.retrofit2", name = "adapter-rxjava3", version.ref ="adapterRxjava3_version"}
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }

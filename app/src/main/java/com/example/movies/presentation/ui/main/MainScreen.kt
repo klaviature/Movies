@@ -41,6 +41,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.movies.R
+import com.example.movies.presentation.ui.main.favourites.FavouriteMoviesNavHost
 import com.example.movies.presentation.ui.main.home.HomeScreenNav
 import com.example.movies.presentation.ui.main.settings.SettingsScreen
 import com.example.movies.presentation.ui.main.watched.WatchedMoviesNavHost
@@ -205,7 +206,15 @@ fun MainScreen(
                     snackbarHostState = snackbarHostState
                 )
             }
-            composable<MainNavGraph.Favourites> {  }
+            composable<MainNavGraph.Favourites> {
+                FavouriteMoviesNavHost(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        bottom = innerPadding.calculateBottomPadding()
+                    ),
+                    snackbarHostState = snackbarHostState
+                )
+            }
             composable<MainNavGraph.Settings> {
                 SettingsScreen(
                     contentPadding = PaddingValues(

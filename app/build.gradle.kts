@@ -65,6 +65,8 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation(libs.androidx.datastore.preferences)
+
     // =================================== Compose ================================================
 //    val composeBom = platform("androidx.compose:compose-bom:2025.05.00")
     val composeBom = platform("androidx.compose:compose-bom:2025.08.00")

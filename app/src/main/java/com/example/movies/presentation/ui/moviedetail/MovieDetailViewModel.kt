@@ -57,7 +57,7 @@ class MovieDetailViewModel @Inject constructor(
 
     fun meme(movieId: Int) {
         viewModelScope.launch {
-            getMovieUseCase.getMovie(movieId).collect { result ->
+            getMovieUseCase(movieId).collect { result ->
                 when (result) {
                     is Result.Error -> {
                         when (result.error) {

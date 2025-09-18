@@ -1,6 +1,5 @@
 package com.example.movies.data.repository
 
-import com.example.movies.data.api.ApiFactoryCoroutines
 import com.example.movies.data.api.ApiServiceCoroutines
 import com.example.movies.data.mapper.toDomain
 import com.example.movies.domain.model.ApiResult

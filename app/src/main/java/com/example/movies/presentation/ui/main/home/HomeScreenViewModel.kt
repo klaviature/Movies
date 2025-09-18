@@ -1,18 +1,12 @@
 package com.example.movies.presentation.ui.main.home
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movies.data.database.MovieDatabase
-import com.example.movies.data.repository.MoviesRepositoryImpl
-import com.example.movies.data.repository.MoviesRepositoryImplTest
 import com.example.movies.domain.model.DataError
 import com.example.movies.domain.model.Movie
 import com.example.movies.domain.model.Result
 import com.example.movies.domain.usecases.recommended.GetRecommendedMoviesUseCase
-import com.example.movies.domain.usecases.recommended.SearchMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

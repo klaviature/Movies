@@ -12,7 +12,7 @@ import javax.inject.Inject
 class GetMovieUseCaseTest @Inject constructor(
     private val repositoryTest: MoviesRepositoryTest
 ) {
-    fun getMovie(movieId: Int): Flow<Result<Movie, DataError>> = flow {
+    operator fun invoke(movieId: Int): Flow<Result<Movie, DataError>> = flow {
         Log.d("GetMovieUseCaseTest", "getMovie: started")
         repositoryTest.getMovieDetailsFromNetwork(movieId).collect { networkResult ->
             when (networkResult) {
@@ -47,12 +47,5 @@ class GetMovieUseCaseTest @Inject constructor(
                 }
             }
         }
-    }
-    suspend fun getMovieFromNetwork(movieId: Int): Flow<Result<Movie, DataError.Network>> {
-        return repositoryTest.getMovieDetailsFromNetwork(movieId)
-    }
-
-    suspend fun getMovieFromLocal(movieId: Int): Flow<Result<Movie, DataError.Local>> {
-        return repositoryTest.getMovieDetailsFromLocal(movieId)
     }
 }

@@ -41,7 +41,7 @@ import com.example.movies.presentation.ui.theme.MoviesTheme
 fun SettingsScreenMain(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 

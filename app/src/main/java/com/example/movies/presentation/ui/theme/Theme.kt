@@ -9,6 +9,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.example.movies.domain.model.ThemeMode
+import com.example.movies.domain.model.ThemeSettings
 
 private val DarkColorScheme = darkColorScheme()
 
@@ -16,11 +18,19 @@ private val LightColorScheme = lightColorScheme()
 
 @Composable
 fun MoviesTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    settings: ThemeSettings = ThemeSettings(
+        themeMode = ThemeMode.SYSTEM,
+        isDynamicColorEnabled = true
+    ),
     content: @Composable () -> Unit
 ) {
+    val darkTheme = when (settings.themeMode) {
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
+    val dynamicColor = settings.isDynamicColorEnabled
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current

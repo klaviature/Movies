@@ -1,7 +1,7 @@
 package com.example.movies.data.repository
 
 import android.util.Log
-import com.example.movies.data.api.ApiFactoryCoroutines
+import com.example.movies.data.api.ApiServiceCoroutines
 import com.example.movies.data.database.MovieDao
 import com.example.movies.data.database.model.MovieEntity
 import com.example.movies.data.database.model.MovieWithDetails
@@ -19,14 +19,15 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 class MoviesRepositoryImplTest @Inject constructor(
-    private val dao: MovieDao
+    private val dao: MovieDao,
+    private val apiService: ApiServiceCoroutines
 ) : MoviesRepositoryTest {
 
     private companion object {
         const val TAG = "MoviesRepositoryImplTest"
     }
 
-    private val apiService = ApiFactoryCoroutines.apiService
+//    private val apiService = ApiFactoryCoroutines.apiService
 
     override suspend fun getRecommendedMovies(page: Int): Flow<Result<List<Movie>, DataError.Network>> = flow {
         emit(Result.Loading)
