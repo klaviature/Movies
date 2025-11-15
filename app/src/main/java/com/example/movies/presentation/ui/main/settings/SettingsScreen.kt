@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.movies.R
 import com.example.movies.presentation.ui.main.AppIcon
+import com.example.movies.presentation.ui.main.settings.about.AboutScreen
 import com.example.movies.presentation.ui.main.settings.api.ApiSettingsScreen
 import com.example.movies.presentation.ui.main.settings.theme.ThemeSettingsScreen
 import com.example.movies.presentation.ui.theme.MoviesTheme
@@ -55,6 +56,7 @@ enum class SettingsItem(
     val title: String,
     val description: String? = null,
     val icon: AppIcon? = null,
+    val enabled: Boolean = true,
     val route: SettingsNavGraph
 ) {
     API(
@@ -73,13 +75,15 @@ enum class SettingsItem(
         title = "Управление памятью",
         description = "Информация о занимаемом пространстве и очистка кэша",
         icon = AppIcon.Resource(R.drawable.database_filled),
-        route = SettingsNavGraph.Storage
+        route = SettingsNavGraph.Storage,
+        enabled = false
     ),
     USER_MANUAL(
         title = "Руководство пользователя",
         description = "Как пользоваться приложением",
         icon = AppIcon.Resource(R.drawable.help_filled),
-        route = SettingsNavGraph.UserManual
+        route = SettingsNavGraph.UserManual,
+        enabled = false
     ),
     ABOUT(
         title = "О приложении",
@@ -130,7 +134,10 @@ fun SettingsScreen(
 
         }
         composable<SettingsNavGraph.About> {
-
+            AboutScreen(
+                navController = navController,
+                contentPadding = contentPadding
+            )
         }
     }
 }

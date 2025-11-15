@@ -26,6 +26,8 @@ class HomeScreenViewModel @Inject constructor(
         Log.d("HomeScreenViewModel", "Viewmodel was created")
     }
 
+    fun errorShown() = _state.update { it.copy(error = null) }
+
     fun load() {
         viewModelScope.launch {
             getRecommendedMoviesUseCase(1).collect { result ->

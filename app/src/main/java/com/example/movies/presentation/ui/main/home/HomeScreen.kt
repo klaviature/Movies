@@ -16,7 +16,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -28,13 +27,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
+import com.example.movies.data.api.model.MovieType
+import com.example.movies.domain.model.Image
 import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieRating
 import com.example.movies.presentation.ui.MoviesList
 import com.example.movies.presentation.ui.moviedetail.MovieDetailScreen
 import com.example.movies.presentation.ui.theme.MoviesTheme
@@ -88,20 +88,22 @@ fun HomeScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     LaunchedEffect(state.error) {
-        when (state.error) {
-            HomeScreenState.Error.Forbidden -> {
-                snackbarHostState.showSnackbar("Ошибка: нет доступа к запрашиваемому ресурсу")
+        state.error?.let {
+            when (state.error) {
+                HomeScreenState.Error.Forbidden -> {
+                    snackbarHostState.showSnackbar("Ошибка: нет доступа к запрашиваемому ресурсу")
+                }
+                HomeScreenState.Error.NotFound -> {
+                    snackbarHostState.showSnackbar("Ошибка: ресурс не найден")
+                }
+                HomeScreenState.Error.Unauthorized -> {
+                    snackbarHostState.showSnackbar("Ошибка авторизации")
+                }
+                is HomeScreenState.Error.Unknown -> {
+                    snackbarHostState.showSnackbar("Неизвестная ошибка: ${state.error.message}")
+                }
             }
-            HomeScreenState.Error.NotFound -> {
-                snackbarHostState.showSnackbar("Ошибка: ресурс не найден")
-            }
-            HomeScreenState.Error.Unauthorized -> {
-                snackbarHostState.showSnackbar("Ошибка авторизации")
-            }
-            is HomeScreenState.Error.Unknown -> {
-                snackbarHostState.showSnackbar("Неизвестная ошибка: ${state.error.message}")
-            }
-            null -> {}
+            viewModel.errorShown()
         }
     }
 
@@ -209,6 +211,37 @@ fun HomeScreenContent(
 @Composable
 private fun HomeScreenPreview() {
     MoviesTheme {
-        HomeScreenNav()
+        HomeScreenContent(
+            movies = List(10) { index ->
+                Movie(
+                    id = index,
+                    name = "Name $index",
+                    type = MovieType.MOVIE,
+                    year = 1990 + index,
+                    description = "",
+                    rating = MovieRating(5.1, 6.4),
+                    ageRating = 18,
+                    logo = Image(null, null),
+                    poster = Image(null, null),
+                    backdrop = Image(null, null),
+                    videos = null,
+                    genres = emptyList(),
+                    countries = emptyList(),
+                    reviewInfo = null,
+                    budget = null,
+                    fees = null,
+                    similarMovies = null,
+                    sequelsAndPrequels = null,
+                    top10 = null,
+                    top250 = null,
+                    isTicketsOnSale = false,
+                    totalSeriesLength = null,
+                    averageSeriesLength = null,
+                    isSeries = false,
+                    status = null,
+                    length = index * 10
+                )
+            }
+        )
     }
 }

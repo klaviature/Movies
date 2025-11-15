@@ -116,7 +116,8 @@ fun SettingsScreenMain(
                             },
                             onClick = {
                                 navController.navigate(item.route)
-                            }
+                            },
+                            enabled = item.enabled
                         ) {
                             Row(
                                 modifier = Modifier
