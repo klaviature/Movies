@@ -8,6 +8,7 @@ import androidx.navigation.toRoute
 import com.example.movies.domain.model.ApiResult
 import com.example.movies.domain.model.DataError
 import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.PersonMovie
 import com.example.movies.domain.model.Result
 import com.example.movies.domain.model.Review
 import com.example.movies.domain.model.Video
@@ -301,7 +302,9 @@ class MovieDetailViewModel @Inject constructor(
 
                 is ApiResult.Success -> {
                     Log.d("MovieDetailViewModel", "loadReviews: success")
-                    _state.value = _state.value.copy(reviews = result.data)
+                    _state.update {
+                        it.copy(reviews = result.data)
+                    }
                 }
             }
             reviewsPage++
@@ -338,7 +341,16 @@ data class MovieDetailState(
         val ratingImdb: String? = null,
         val trailers: List<Video>? = null,
         val genres: List<String> = emptyList(),
-        val countries: List<String> = emptyList()
+        val countries: List<String> = emptyList(),
+        val persons: List<MoviePersonUi> = emptyList()
+    )
+
+    data class MoviePersonUi(
+        val id: Int = -1,
+        val name: String = "",
+        val photoUrl: String = "",
+        val profession: String? = null,
+        val description: String
     )
 
     sealed interface Error {
@@ -368,10 +380,19 @@ fun Movie.toUiState() = MovieDetailState.MovieUi(
     ratingKp = rating.kp?.let { String.format("%.1f", it) },
     ratingImdb = rating.imdb?.let { String.format("%.1f", it) },
     trailers = videos?.trailers,
+    persons = persons.map {it.toUiState()},
     genres = genres.map {
         it.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase(getDefault()) else it.toString()
         }
     },
     countries = countries
+)
+
+fun PersonMovie.toUiState() = MovieDetailState.MoviePersonUi(
+    id = id,
+    name = name,
+    photoUrl = photo ?: "",
+    profession = profession?.replaceFirstChar { it.titlecase(getDefault()) },
+    description = description
 )

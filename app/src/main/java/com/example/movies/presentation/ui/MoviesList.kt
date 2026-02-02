@@ -26,13 +26,13 @@ fun MoviesList(
         modifier = modifier,
         state = state,
         contentPadding = contentPadding,
-        columns = GridCells.Adaptive(190.dp)
+        columns = GridCells.Adaptive(170.dp)
     ) {
         items(movies) {
             MovieCard(
                 modifier = Modifier.padding(8.dp),
-                ratingKp = it.rating.kp?.toString(),
-                ratingImdb = it.rating.imdb?.toString(),
+                ratingKp = it.rating.kp?.let { String.format("%.1f", it)},
+                ratingImdb = it.rating.imdb?.let {String.format("%.1f", it)},
                 posterUrl = it.poster.url,
                 onClick = { onMovieClick(it.id) }
             )

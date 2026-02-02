@@ -227,6 +227,7 @@ private fun HomeScreenPreview() {
                     videos = null,
                     genres = emptyList(),
                     countries = emptyList(),
+                    persons = emptyList(),
                     reviewInfo = null,
                     budget = null,
                     fees = null,

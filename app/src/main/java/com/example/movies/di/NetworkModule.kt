@@ -21,7 +21,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://api.kinopoisk.dev/v1.4/"
+    private const val BASE_URL = "https://api.poiskkino.dev/v1.4/"
 
     @Provides
     @Singleton

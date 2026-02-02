@@ -18,6 +18,7 @@ data class Movie(
     val videos: Videos?,
     val genres: List<String>,
     val countries: List<String>,
+    val persons: List<PersonMovie>,
     val reviewInfo: ReviewInfo?,
     val budget: CurrencyValue<Int>?,
     val fees: MovieFees?,

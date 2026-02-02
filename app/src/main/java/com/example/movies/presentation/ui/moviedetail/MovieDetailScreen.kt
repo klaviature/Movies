@@ -5,12 +5,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,9 +20,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -51,6 +55,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -59,6 +64,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,6 +77,7 @@ import androidx.navigation.compose.rememberNavController
 import coil3.compose.SubcomposeAsyncImage
 import com.example.movies.R
 import com.example.movies.convertUtcToLocal
+import com.example.movies.domain.model.PersonMovie
 import com.example.movies.domain.model.Review
 import com.example.movies.domain.model.Video
 import com.example.movies.presentation.ui.ExpandableText
@@ -112,27 +119,8 @@ fun MovieDetailScreen(
     }
 
     MovieDetailScreenContent(
+        uiState = state.value,
         contentPadding = contentPadding,
-        isLoading = state.value.isLoading,
-        name = state.value.movie.name,
-        type = state.value.movie.type,
-        year = state.value.movie.year,
-        description = state.value.movie.description,
-        length = state.value.movie.length,
-        ageRating = state.value.movie.ageRating,
-        posterUrl = state.value.movie.posterUrl,
-        ratingKp = state.value.movie.ratingKp,
-        ratingImdb = state.value.movie.ratingImdb,
-        trailers = state.value.movie.trailers ?: emptyList(),
-        genres = state.value.movie.genres,
-        countries = state.value.movie.countries,
-        reviews = state.value.reviews,
-        backdropUrl = state.value.movie.backdropUrl,
-        logoUrl = state.value.movie.logoUrl,
-        isFavourite = state.value.isFavourite,
-        isWatched = state.value.isWatched,
-        isFavouriteLoading = state.value.isFavouriteLoading,
-        isWatchedLoading = state.value.isWatchedLoading,
         onBackPressed = {
             navController.popBackStack()
         },
@@ -149,26 +137,7 @@ fun MovieDetailScreen(
 @Composable
 fun MovieDetailScreenContent(
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    name: String,
-    type: String,
-    year: String,
-    description: String,
-    length: String?,
-    ageRating: String,
-    posterUrl: String?,
-    backdropUrl: String?,
-    logoUrl: String?,
-    ratingKp: String?,
-    ratingImdb: String?,
-    trailers: List<Video>,
-    genres: List<String>?,
-    countries: List<String>?,
-    reviews: List<Review>,
-    isLoading: Boolean = false,
-    isFavourite: Boolean = false,
-    isWatched: Boolean = false,
-    isFavouriteLoading: Boolean = false,
-    isWatchedLoading: Boolean = false,
+    uiState: MovieDetailState,
     onBackPressed: () -> Unit = { },
     onAddToFavouritesClick: () -> Unit = { },
     onAddToWatchedClick: () -> Unit = { }
@@ -194,7 +163,7 @@ fun MovieDetailScreenContent(
             TopAppBar(
                 title = {
                     AnimatedVisibility(visible = showAppBarContent) {
-                        Text(text = name, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(text = uiState.movie.name, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -217,7 +186,7 @@ fun MovieDetailScreenContent(
                         tooltip = {
                             PlainTooltip {
                                 Text(
-                                    text = if (isFavourite) {
+                                    text = if (uiState.isFavourite) {
                                         "В избранном"
                                     } else {
                                         "Добавить в избранное"
@@ -229,13 +198,13 @@ fun MovieDetailScreenContent(
                     ) {
                         IconButton(
                             onClick = onAddToFavouritesClick,
-                            enabled = !isFavouriteLoading
+                            enabled = !uiState.isFavouriteLoading
                         ) {
-                            if (isFavouriteLoading) {
+                            if (uiState.isFavouriteLoading) {
                                 CircularProgressIndicator(modifier = Modifier.size(24.dp))
                             } else {
                                 Icon(
-                                    imageVector = if (isFavourite) {
+                                    imageVector = if (uiState.isFavourite) {
                                         Icons.Filled.Favorite
                                     } else {
                                         Icons.Outlined.FavoriteBorder
@@ -250,7 +219,7 @@ fun MovieDetailScreenContent(
                         tooltip = {
                             PlainTooltip {
                                 Text(
-                                    text = if (isWatched) {
+                                    text = if (uiState.isWatched) {
                                         "Просмотрено"
                                     } else {
                                         "Добавить в просмотренное"
@@ -262,13 +231,13 @@ fun MovieDetailScreenContent(
                     ) {
                         IconButton(
                             onClick = onAddToWatchedClick,
-                            enabled = !isWatchedLoading
+                            enabled = !uiState.isWatchedLoading
                         ) {
-                            if (isWatchedLoading) {
+                            if (uiState.isWatchedLoading) {
                                 CircularProgressIndicator(modifier = Modifier.size(24.dp))
                             } else {
                                 Icon(
-                                    imageVector = if (isWatched) {
+                                    imageVector = if (uiState.isWatched) {
                                         ImageVector.vectorResource(R.drawable.eye_filled)
                                     } else {
                                         ImageVector.vectorResource(R.drawable.eye_outlined)
@@ -284,7 +253,7 @@ fun MovieDetailScreenContent(
     ) { innerPadding ->
         val scrollState = rememberScrollState()
 
-        if (isLoading) {
+        if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -293,7 +262,7 @@ fun MovieDetailScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(450.dp),
-                model = backdropUrl ?: posterUrl,
+                model = uiState.movie.backdropUrl ?: uiState.movie.posterUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
@@ -322,29 +291,37 @@ fun MovieDetailScreenContent(
                         modifier = Modifier
                             .padding(horizontal = 12.dp)
                             .consumeWindowInsets(innerPadding), // TODO РЕШИТЬ ПРОБЛЕМУ В Горизонтальной ориентации
-                        ratingKp = ratingKp,
-                        ratingImdb = ratingImdb,
-                        year = year,
-                        countries = countries,
-                        length = length,
-                        genres = genres,
-                        logoUrl = logoUrl,
-                        name = name,
-                        ageRating = ageRating
+                        ratingKp = uiState.movie.ratingKp,
+                        ratingImdb = uiState.movie.ratingImdb,
+                        year = uiState.movie.year,
+                        countries = uiState.movie.countries,
+                        length = uiState.movie.length,
+                        genres = uiState.movie.genres,
+                        logoUrl = uiState.movie.logoUrl,
+                        name = uiState.movie.name,
+                        ageRating = uiState.movie.ageRating
                     )
                     MovieDescription(
                         modifier = Modifier.padding(horizontal = 12.dp),
-                        description = description
+                        description = uiState.movie.description
                     )
-                    if (trailers.isNotEmpty()) {
-                        TrailersList(
-                            trailers = trailers,
+                    if (uiState.movie.persons.isNotEmpty()) {
+                        PersonList(
+                            modifier = Modifier.fillMaxWidth(),
+                            persons = uiState.movie.persons,
+                            onClick = {},
                             contentPadding = PaddingValues(horizontal = 12.dp)
                         )
                     }
-                    if (reviews.isNotEmpty()) {
+                    if (uiState.movie.trailers?.isNotEmpty() ?: false) {
+                        TrailersList(
+                            trailers = uiState.movie.trailers,
+                            contentPadding = PaddingValues(horizontal = 12.dp)
+                        )
+                    }
+                    if (uiState.reviews.isNotEmpty()) {
                         ReviewsList(
-                            reviews = reviews,
+                            reviews = uiState.reviews,
                             onItemClick = { review ->
                                 displayedReview = review
                             },
@@ -556,6 +533,96 @@ fun ReviewsList(
     }
 }
 
+@Composable
+fun PersonList(
+    modifier: Modifier = Modifier,
+    persons: List<MovieDetailState.MoviePersonUi>,
+    onClick: (Int) -> Unit,
+    contentPadding: PaddingValues = PaddingValues()
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            modifier = Modifier.padding(contentPadding),
+            text = "Актеры и режжисеры",
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp
+        )
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = contentPadding
+        ) {
+            items(persons) {
+                MoviePerson(
+                    person = MovieDetailState.MoviePersonUi(
+                        id = it.id,
+                        name = it.name,
+                        photoUrl = it.photoUrl,
+                        profession = it.profession,
+                        description = it.description
+                    ),
+                    onClick = onClick
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MoviePerson(
+    modifier: Modifier = Modifier,
+    person: MovieDetailState.MoviePersonUi,
+    onClick: (Int) -> Unit
+) {
+    Column(
+        modifier = modifier
+            .size(width = 100.dp, height = 170.dp)
+            .clickable(onClick = { onClick(person.id) }),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        SubcomposeAsyncImage(
+            modifier = Modifier
+                .padding(4.dp)
+                .aspectRatio(1f)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+            ,
+            model = person.photoUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            loading = {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) { }
+            },
+            error = {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) { }
+            }
+        )
+        Text(
+            text = person.name,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            lineHeight = 16.sp,
+            textAlign = TextAlign.Center
+        )
+        person.profession?.let {
+            Text(
+                text = it,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = 16.sp,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
 @Preview(
     showSystemUi = true,
     uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_UNDEFINED
@@ -564,28 +631,41 @@ fun ReviewsList(
 private fun MovieDetailScreenPreview() {
     MoviesTheme {
         MovieDetailScreenContent(
-            isLoading = false,
-            name = "1 + 1",
-            type = "",
-            year = "2025",
-            description = "Пострадав в результате несчастного случая, богатый аристократ Филипп " +
-                    "нанимает в помощники человека, который менее всего подходит для этой работы, " +
-                    "– молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. " +
-                    "Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается " +
-                    "привнести в размеренную жизнь аристократа дух приключений.",
-            length = "123 мин",
-            ageRating = "18+",
-            posterUrl = "",
-            backdropUrl = "",
-            logoUrl = "",
-            ratingKp = "9.3",
-            ratingImdb = "9.3",
-            trailers = emptyList(),
-            genres = listOf("Драма", "Комедия"),
-            countries = listOf("Франция", "США", "Япония", "Чехия"),
-            reviews = emptyList(),
-            isFavourite = false,
-            isWatched = false
+            uiState = MovieDetailState(
+                isLoading = false,
+                movie = MovieDetailState.MovieUi(
+                    name = "1 + 1",
+                    type = "",
+                    year = "2026",
+                    description = "Some description",
+                    length = "120 min",
+                    ageRating = "18+",
+                    posterUrl = "",
+                    backdropUrl = "",
+                    logoUrl = "",
+                    ratingKp = "7.3",
+                    ratingImdb = "7.3",
+                    trailers = emptyList(),
+                    genres = emptyList(),
+                    countries = emptyList(),
+                    persons = listOf(
+                        MovieDetailState.MoviePersonUi(
+                            id = 0,
+                            name = "Egor Fomin Pavlovich",
+                            photoUrl = "",
+                            profession = "Actor",
+                            description = ""
+                        )
+                    )
+                ),
+                reviews = emptyList(),
+                error = null,
+                message = null,
+                isWatchedLoading = false,
+                isFavouriteLoading = false,
+                isWatched = false,
+                isFavourite = false
+            )
         )
     }
 }
@@ -598,28 +678,32 @@ private fun MovieDetailScreenPreview() {
 private fun MovieDetailScreenDarkThemePreview() {
     MoviesTheme {
         MovieDetailScreenContent(
-            isLoading = false,
-            name = "1 + 1",
-            type = "",
-            year = "2025",
-            description = "Пострадав в результате несчастного случая, богатый аристократ Филипп " +
-                    "нанимает в помощники человека, который менее всего подходит для этой работы, " +
-                    "– молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. " +
-                    "Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается " +
-                    "привнести в размеренную жизнь аристократа дух приключений.",
-            length = "123",
-            ageRating = "18+",
-            posterUrl = "",
-            backdropUrl = "",
-            logoUrl = "",
-            ratingKp = "9.3",
-            ratingImdb = "9.3",
-            trailers = emptyList(),
-            genres = listOf("Драма", "Комедия"),
-            countries = listOf("Франция", "США"),
-            reviews = emptyList(),
-            isFavourite = false,
-            isWatched = false
+            uiState = MovieDetailState(
+                isLoading = false,
+                movie = MovieDetailState.MovieUi(
+                    name = "1 + 1",
+                    type = "",
+                    year = "2026",
+                    description = "Some description",
+                    length = "120 min",
+                    ageRating = "18+",
+                    posterUrl = "",
+                    backdropUrl = "",
+                    logoUrl = "",
+                    ratingKp = "7.3",
+                    ratingImdb = "7.3",
+                    trailers = emptyList(),
+                    genres = emptyList(),
+                    countries = emptyList()
+                ),
+                reviews = emptyList(),
+                error = null,
+                message = null,
+                isWatchedLoading = false,
+                isFavouriteLoading = false,
+                isWatched = false,
+                isFavourite = false
+            )
         )
     }
 }

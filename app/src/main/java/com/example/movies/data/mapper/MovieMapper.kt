@@ -6,6 +6,7 @@ import com.example.movies.data.api.model.ItemNameDto
 import com.example.movies.data.api.model.LinkedMovieDto
 import com.example.movies.data.api.model.MovieDto
 import com.example.movies.data.api.model.MovieType
+import com.example.movies.data.api.model.PersonInMovieDto
 import com.example.movies.data.api.model.RatingDto
 import com.example.movies.data.api.model.ReviewInfoDto
 import com.example.movies.data.api.model.SearchMovieDto
@@ -18,6 +19,7 @@ import com.example.movies.domain.model.LinkedMovie
 import com.example.movies.domain.model.Movie
 import com.example.movies.domain.model.MovieFees
 import com.example.movies.domain.model.MovieRating
+import com.example.movies.domain.model.PersonMovie
 import com.example.movies.domain.model.ReviewInfo
 import com.example.movies.domain.model.SearchMovie
 import com.example.movies.domain.model.Video
@@ -39,6 +41,7 @@ fun MovieDto.toDomain(): Movie = Movie(
     videos = videos?.toDomain(),
     genres = genres?.map {it.toDomain() } ?: emptyList(),
     countries = countries?.map { it.toDomain() } ?: emptyList(),
+    persons = persons?.map { it.toDomain() } ?: emptyList(),
     reviewInfo = reviewInfo?.toDomain() ?: ReviewInfo(0, 0, ""),
     budget = budget?.toDomain() ?: CurrencyValue(0),
     fees = fees?.toDomain() ?: MovieFees(CurrencyValue(0), CurrencyValue(0)),
@@ -50,6 +53,14 @@ fun MovieDto.toDomain(): Movie = Movie(
     totalSeriesLength = totalSeriesLength,
     averageSeriesLength = seriesLength,
     isSeries = isSeries ?: false,
+)
+
+fun PersonInMovieDto.toDomain() = PersonMovie(
+    id = id ?: 0,
+    photo = photo ?: "",
+    name = name ?: enName ?: "",
+    description = description ?: "",
+    profession = profession
 )
 
 fun LinkedMovieDto.toDomain() = LinkedMovie(

@@ -315,6 +315,7 @@ fun MovieWithDetails.toDomain() = Movie(
     videos = null,
     genres = genres,
     countries = countries,
+    persons = emptyList(),
     reviewInfo = null,
     budget = null,
     fees = null,
