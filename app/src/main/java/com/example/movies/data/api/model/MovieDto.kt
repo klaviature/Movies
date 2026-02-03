@@ -188,6 +188,9 @@ enum class MovieType {
     @SerialName("tv-show")
     TV_SHOW,
 
+    @SerialName("remake")
+    REMAKE,
+
     @SerialName("string")
     UNKNOWN
 }

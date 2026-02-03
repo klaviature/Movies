@@ -103,8 +103,8 @@ fun SearchMovieDto.toDomain() = SearchMovie(
 )
 
 fun ShortImageDto.toDomain() = Image(
-    url = url ?: "",
-    previewUrl = previewUrl ?: ""
+    url = url,
+    previewUrl = previewUrl
 )
 
 fun RatingDto.toDomain() = MovieRating(

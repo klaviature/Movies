@@ -2,8 +2,10 @@ package com.example.movies.data.api.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
 @Serializable
+@JsonIgnoreUnknownKeys
 data class LinkedMovieDto(
     @SerialName("id") val id: Int? = null,
     @SerialName("name") val name: String? = null,

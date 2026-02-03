@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.movies.domain.model.ApiResult
 import com.example.movies.domain.model.DataError
+import com.example.movies.domain.model.LinkedMovie
 import com.example.movies.domain.model.Movie
 import com.example.movies.domain.model.PersonMovie
 import com.example.movies.domain.model.Result
@@ -53,7 +54,7 @@ class MovieDetailViewModel @Inject constructor(
     init {
         Log.d("MovieDetailViewModel", "Viewmodel was created")
         meme(movieId)
-        loadReviews(movieId)
+        loadReviews()
     }
 
     fun meme(movieId: Int) {
@@ -279,7 +280,7 @@ class MovieDetailViewModel @Inject constructor(
         }
     }
 
-    fun loadReviews(movieId: Int) {
+    fun loadReviews() {
         viewModelScope.launch {
             Log.d("MovieDetailViewModel", "loadReviews: started")
             val result = getReviewsUseCase(movieId, reviewsPage)
@@ -303,7 +304,7 @@ class MovieDetailViewModel @Inject constructor(
                 is ApiResult.Success -> {
                     Log.d("MovieDetailViewModel", "loadReviews: success")
                     _state.update {
-                        it.copy(reviews = result.data)
+                        it.copy(reviews = it.reviews + result.data)
                     }
                 }
             }
@@ -342,7 +343,8 @@ data class MovieDetailState(
         val trailers: List<Video>? = null,
         val genres: List<String> = emptyList(),
         val countries: List<String> = emptyList(),
-        val persons: List<MoviePersonUi> = emptyList()
+        val persons: List<MoviePersonUi> = emptyList(),
+        val sequelsAndPrequels: List<LinkedMovieUi> = emptyList()
     )
 
     data class MoviePersonUi(
@@ -372,7 +374,13 @@ fun Movie.toUiState() = MovieDetailState.MovieUi(
     type = type.name,
     year = year.toString(),
     description = description,
-    length = "${length?.toString()} мин",
+    length = if (length != null) {
+        "$length мин"
+    } else if (isSeries) {
+        "Сериал"
+    } else {
+        null
+    },
     ageRating = "$ageRating+",
     backdropUrl = backdrop.url ?: backdrop.previewUrl,
     posterUrl = poster.url ?: poster.previewUrl,
@@ -386,7 +394,8 @@ fun Movie.toUiState() = MovieDetailState.MovieUi(
             if (it.isLowerCase()) it.titlecase(getDefault()) else it.toString()
         }
     },
-    countries = countries
+    countries = countries,
+    sequelsAndPrequels = sequelsAndPrequels?.map { it.toUi() } ?: emptyList()
 )
 
 fun PersonMovie.toUiState() = MovieDetailState.MoviePersonUi(
@@ -395,4 +404,12 @@ fun PersonMovie.toUiState() = MovieDetailState.MoviePersonUi(
     photoUrl = photo ?: "",
     profession = profession?.replaceFirstChar { it.titlecase(getDefault()) },
     description = description
+)
+
+fun LinkedMovie.toUi() = LinkedMovieUi(
+    id = id,
+    name = name,
+    posterUrl = poster?.url ?: poster?.previewUrl ?: "",
+    ratingKp = rating?.kp ?: 0.0,
+    ratingImdb = rating?.imdb ?: 0.0
 )

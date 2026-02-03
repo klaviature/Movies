@@ -3,6 +3,7 @@ package com.example.movies.presentation.ui.main.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.query
 import com.example.movies.domain.model.DataError
 import com.example.movies.domain.model.Movie
 import com.example.movies.domain.model.Result
@@ -10,6 +11,9 @@ import com.example.movies.domain.usecases.recommended.GetRecommendedMoviesUseCas
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,13 +28,27 @@ class HomeScreenViewModel @Inject constructor(
     init {
         load()
         Log.d("HomeScreenViewModel", "Viewmodel was created")
+
+        viewModelScope.launch {
+            _state
+                .map { it.searchQuery }
+                .distinctUntilChanged()
+                .debounce(500)
+                .collect { query ->
+                    resetAndLoad(query)
+                }
+        }
+    }
+
+    private fun resetAndLoad(query: String) {
+        _state.update { it.copy(movies = emptyList(), page = 1, searchQuery = query) }
     }
 
     fun errorShown() = _state.update { it.copy(error = null) }
 
     fun load() {
         viewModelScope.launch {
-            getRecommendedMoviesUseCase(1).collect { result ->
+            getRecommendedMoviesUseCase(page = state.value.page).collect { result ->
                 when (result) {
                     is Result.Error -> {
                         when (result.error) {
@@ -72,6 +90,7 @@ class HomeScreenViewModel @Inject constructor(
                         _state.update {
                             it.copy(movies = result.data, isRefreshing = false)
                         }
+                        _state.update { it.copy(page = it.page + 1) }
                     }
                 }
             }
@@ -81,6 +100,8 @@ class HomeScreenViewModel @Inject constructor(
 
 data class HomeScreenState(
     val movies: List<Movie> = emptyList(),
+    val searchQuery: String = "",
+    val page: Int = 1,
     val isRefreshing: Boolean = false,
     val error: Error? = null
 ) {

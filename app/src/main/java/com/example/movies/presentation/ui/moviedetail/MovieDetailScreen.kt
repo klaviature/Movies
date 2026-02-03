@@ -1,6 +1,7 @@
 package com.example.movies.presentation.ui.moviedetail
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -80,11 +82,13 @@ import com.example.movies.convertUtcToLocal
 import com.example.movies.domain.model.PersonMovie
 import com.example.movies.domain.model.Review
 import com.example.movies.domain.model.Video
+import com.example.movies.presentation.navigation.RootNavGraph
 import com.example.movies.presentation.ui.ExpandableText
 import com.example.movies.presentation.ui.ImdbRatingCard
 import com.example.movies.presentation.ui.KpRatingCard
 import com.example.movies.presentation.ui.ReviewCard
 import com.example.movies.presentation.ui.TrailerCard
+import com.example.movies.presentation.ui.main.home.HomeNavGraph
 import com.example.movies.presentation.ui.theme.MoviesTheme
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 
@@ -129,6 +133,12 @@ fun MovieDetailScreen(
         },
         onAddToWatchedClick = {
             viewModel.toggleWatchedStatus()
+        },
+        onLinkedMovieClick = {
+            navController.navigate(HomeNavGraph.MovieDetails(it))
+        },
+        onReviewsListReachEnd = {
+            viewModel.loadReviews()
         }
     )
 }
@@ -140,7 +150,9 @@ fun MovieDetailScreenContent(
     uiState: MovieDetailState,
     onBackPressed: () -> Unit = { },
     onAddToFavouritesClick: () -> Unit = { },
-    onAddToWatchedClick: () -> Unit = { }
+    onAddToWatchedClick: () -> Unit = { },
+    onLinkedMovieClick: (Int) -> Unit = { },
+    onReviewsListReachEnd: () -> Unit = {}
 ) {
     var displayedReview: Review? by remember { mutableStateOf(null) }
 
@@ -325,8 +337,28 @@ fun MovieDetailScreenContent(
                             onItemClick = { review ->
                                 displayedReview = review
                             },
-                            contentPadding = PaddingValues(horizontal = 12.dp)
+                            contentPadding = PaddingValues(horizontal = 12.dp),
+                            onReachEnd = onReviewsListReachEnd
                         )
+                    }
+                    if (uiState.movie.sequelsAndPrequels.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(PaddingValues(horizontal = 12.dp)),
+                                text = "Сиквелы и приквелы",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp
+                            )
+                            LinkedMovieList(
+                                movies = uiState.movie.sequelsAndPrequels,
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(horizontal = 12.dp),
+                                onClick = onLinkedMovieClick
+                            )
+                        }
                     }
                 }
             }
@@ -501,8 +533,27 @@ fun ReviewsList(
     modifier: Modifier = Modifier,
     reviews: List<Review>,
     onItemClick: (Review) -> Unit,
-    contentPadding: PaddingValues = PaddingValues()
+    contentPadding: PaddingValues = PaddingValues(),
+    onReachEnd: () -> Unit = {}
 ) {
+    val lazyListState = rememberLazyListState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
+                ?: return@derivedStateOf false
+
+            lastVisibleItem.index >= lazyListState.layoutInfo.totalItemsCount - 1
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) {
+            Log.d("MovieDetailsScreen", "достигнут конец списка рецензий")
+            onReachEnd()
+        }
+    }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -514,6 +565,7 @@ fun ReviewsList(
             fontSize = 24.sp
         )
         LazyRow(
+            state = lazyListState,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = contentPadding
         ) {
@@ -656,7 +708,16 @@ private fun MovieDetailScreenPreview() {
                             profession = "Actor",
                             description = ""
                         )
-                    )
+                    ),
+                    sequelsAndPrequels = List(5) { index ->
+                        LinkedMovieUi(
+                            id = index,
+                            name = "Movie $index",
+                            posterUrl = "",
+                            ratingKp = (index + 3).toDouble(),
+                            ratingImdb = (index + 3).toDouble()
+                        )
+                    }
                 ),
                 reviews = emptyList(),
                 error = null,
